@@ -3,7 +3,7 @@
 import { execFileSync } from 'node:child_process'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { discoverPages, HELPER_ROUTES, ROOT_DIR } from './lib/routes.mjs'
+import { discoverPages, publicRoutes, ROOT_DIR } from './lib/routes.mjs'
 
 const BASE_URL = (process.env.SITE_URL || 'https://daviddangerfield.com').replace(/\/$/, '')
 
@@ -39,12 +39,7 @@ async function main() {
   const pages = await discoverPages(ROOT_DIR)
   const routes = []
 
-  for (const page of pages) {
-    if (page.metaError || !page.route) continue
-    if (!page.indexable) continue
-    if (!page.route.endsWith('/')) continue
-    if (HELPER_ROUTES.has(page.route)) continue
-
+  for (const page of publicRoutes(pages)) {
     const metaRel = path.relative(ROOT_DIR, page.metaPath)
     const contentRel = path.relative(ROOT_DIR, page.contentPath)
 

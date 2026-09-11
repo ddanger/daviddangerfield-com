@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import https from 'node:https'
-import { discoverPages, HELPER_ROUTES, ROOT_DIR } from './lib/routes.mjs'
+import { discoverPages, publicRoutes, ROOT_DIR } from './lib/routes.mjs'
 
 const BASE_URL = (process.env.SITE_URL || 'https://daviddangerfield.com').replace(/\/$/, '')
 const TIMEOUT_MS = 12000
@@ -54,15 +54,9 @@ function printSummary(results) {
 
 async function discoverUptimeRoutes() {
   const pages = await discoverPages(ROOT_DIR)
-  const routes = pages
-    .filter((page) => !page.metaError && typeof page.route === 'string')
-    .filter((page) => page.indexable)
+  return publicRoutes(pages)
     .map((page) => page.route)
-    .filter((route) => route.endsWith('/'))
-    .filter((route) => !HELPER_ROUTES.has(route))
     .sort()
-
-  return routes
 }
 
 async function main() {

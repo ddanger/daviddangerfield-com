@@ -52,7 +52,17 @@ jobs:
             exit 0
           fi
 
-          unexpected_changes="$(printf '%s\n' "${changed_files}" | grep -Ev '^(index\.html|about/index\.html|services/index\.html|contact/index\.html)$' || true)"
+          # Ask the same page registry build.mjs uses, so this list can never
+          # drift from what the build actually produces.
+          generated_files="$(node -e "
+            import('./scripts/lib/routes.mjs').then(async ({ discoverPages, ROOT_DIR }) => {
+              const pages = await discoverPages(ROOT_DIR)
+              console.log(pages.map((p) => p.meta.outputPath).join('\n'))
+            })
+          ")"
+
+          pattern="$(printf '%s\n' "${generated_files}" | sed 's/\./\\./g' | paste -sd '|' -)"
+          unexpected_changes="$(printf '%s\n' "${changed_files}" | grep -Ev "^(${pattern})$" || true)"
           if [[ -n "${unexpected_changes}" ]]; then
             echo "Refusing to push unexpected file changes:"
             printf '%s\n' "${unexpected_changes}"
@@ -62,6 +72,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${MAIN_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git add index.html about/index.html services/index.html contact/index.html
+          printf '%s\n' "${generated_files}" | xargs git add
           git commit -m "chore: sync generated output"
           git push
