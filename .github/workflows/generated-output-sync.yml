@@ -52,14 +52,9 @@ jobs:
             exit 0
           fi
 
-          # Ask the same page registry build.mjs uses, so this list can never
-          # drift from what the build actually produces.
-          generated_files="$(node -e "
-            import('./scripts/lib/routes.mjs').then(async ({ discoverPages, ROOT_DIR }) => {
-              const pages = await discoverPages(ROOT_DIR)
-              console.log(pages.map((p) => p.meta.outputPath).join('\n'))
-            })
-          ")"
+          # Ask the same list build.mjs and verify-generated.mjs use, so this
+          # guard can never drift from what the build actually produces.
+          generated_files="$(node scripts/list-generated-files.mjs)"
 
           pattern="$(printf '%s\n' "${generated_files}" | sed 's/\./\\./g' | paste -sd '|' -)"
           unexpected_changes="$(printf '%s\n' "${changed_files}" | grep -Ev "^(${pattern})$" || true)"
