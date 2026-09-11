@@ -17,9 +17,10 @@
  * Usage: node scripts/build.mjs
  */
 
-import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises'
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { discoverPages } from './lib/routes.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -156,15 +157,14 @@ async function build() {
     site.resumeUrl,
   )
 
-  const pagesDir = join(SRC_DIR, 'pages')
-  const pageIds = (await readdir(pagesDir, { withFileTypes: true }))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .sort()
+  const discovered = await discoverPages(ROOT_DIR)
+  const broken = discovered.filter((p) => p.metaError)
+  if (broken.length > 0) {
+    const details = broken.map((p) => `  - ${p.pageId}: ${p.metaError}`).join('\n')
+    throw new Error(`Invalid meta.json for ${broken.length} page(s):\n${details}`)
+  }
 
-  for (const pageId of pageIds) {
-    const pageDir = join(pagesDir, pageId)
-    const page = JSON.parse(await readFile(join(pageDir, 'meta.json'), 'utf8'))
+  for (const { pageId, pageDir, meta: page } of discovered) {
     const pageContent = injectVersionedResumeLinks(
       await readFile(join(pageDir, 'content.html'), 'utf8'),
       site.resumeUrl,
@@ -194,7 +194,7 @@ async function build() {
     console.log(`  ✓ ${page.outputPath}`)
   }
 
-  console.log(`\nBuild complete — ${pageIds.length} pages generated.`)
+  console.log(`\nBuild complete — ${discovered.length} pages generated.`)
 }
 
 build().catch((err) => {
