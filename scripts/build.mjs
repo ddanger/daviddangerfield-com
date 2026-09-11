@@ -8,19 +8,25 @@
  *   src/partials/footer.html          — shared <footer> (with schedule-link token)
  *   src/pages/{page}/content.html     — per-page <main> content
  *   src/pages/{page}/meta.json        — per-page metadata, outputPath, footer config
+ *   src/partials/resume-redirect.html — the bare resume/cv meta-refresh pages
  *
- * Pages are auto-discovered by scanning src/pages/ subdirectories.
- * To add a page: create src/pages/{page}/content.html and meta.json.
+ * Pages are auto-discovered by scanning src/pages/ subdirectories (see
+ * scripts/lib/routes.mjs). To add a page: create src/pages/{page}/content.html
+ * and meta.json. The two resume-redirect pages are a fixed, separate list
+ * (scripts/lib/resume-redirects.mjs) since they don't share layout.html.
  *
  * Output: overwrites each route's static HTML file in-place.
  *
- * Usage: node scripts/build.mjs
+ * Usage: node scripts/build.mjs — or import { build } from './build.mjs'
+ * to run it in-process (see dev.mjs).
  */
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { discoverPages } from './lib/routes.mjs'
+import { missingRequiredFields } from './lib/meta-schema.mjs'
+import { RESUME_REDIRECTS } from './lib/resume-redirects.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -145,7 +151,20 @@ function injectVersionedResumeLinks(content, resumeUrl) {
   return content.replaceAll('/Resume-David-Dangerfield.pdf', resumeUrl)
 }
 
-async function build() {
+async function writeGenerated(outputPath, html, sourceLabel) {
+  const generatedComment = [
+    `<!-- GENERATED FILE — do not edit directly. -->`,
+    `<!-- Source: ${sourceLabel} -->`,
+    `<!-- Regenerate: npm run build -->`,
+  ].join('\n')
+
+  const fullPath = join(ROOT_DIR, outputPath)
+  await mkdir(dirname(fullPath), { recursive: true })
+  await writeFile(fullPath, `${generatedComment}\n${html}`, 'utf8')
+  console.log(`  ✓ ${outputPath}`)
+}
+
+export async function build() {
   const site = JSON.parse(await readFile(join(SRC_DIR, 'site.json'), 'utf8'))
   const layout = await readFile(join(SRC_DIR, 'partials', 'layout.html'), 'utf8')
   const headerPartial = injectVersionedResumeLinks(
@@ -158,11 +177,18 @@ async function build() {
   )
 
   const discovered = await discoverPages(ROOT_DIR)
-  const broken = discovered.filter((p) => p.metaError)
-  if (broken.length > 0) {
-    const details = broken.map((p) => `  - ${p.pageId}: ${p.metaError}`).join('\n')
-    throw new Error(`Invalid meta.json for ${broken.length} page(s):\n${details}`)
+  const problems = discovered.flatMap((p) => {
+    if (p.metaError) return [`${p.pageId}: ${p.metaError}`]
+    return missingRequiredFields(p.meta).map(
+      (field) => `${p.pageId}: missing required field ${field}`,
+    )
+  })
+  if (problems.length > 0) {
+    const details = problems.map((p) => `  - ${p}`).join('\n')
+    throw new Error(`Invalid meta.json:\n${details}`)
   }
+
+  const written = []
 
   for (const { pageId, pageDir, meta: page } of discovered) {
     const pageContent = injectVersionedResumeLinks(
@@ -182,22 +208,33 @@ async function build() {
       FOOTER: footer,
     })
 
-    const generatedComment = [
-      `<!-- GENERATED FILE — do not edit directly. -->`,
-      `<!-- Source: src/pages/${pageId}/content.html + src/partials/layout.html -->`,
-      `<!-- Regenerate: npm run build -->`,
-    ].join('\n')
-
-    const outputPath = join(ROOT_DIR, page.outputPath)
-    await mkdir(dirname(outputPath), { recursive: true })
-    await writeFile(outputPath, `${generatedComment}\n${html}`, 'utf8')
-    console.log(`  ✓ ${page.outputPath}`)
+    await writeGenerated(
+      page.outputPath,
+      html,
+      `src/pages/${pageId}/content.html + src/partials/layout.html`,
+    )
+    written.push(page.outputPath)
   }
 
-  console.log(`\nBuild complete — ${discovered.length} pages generated.`)
+  const redirectTemplate = await readFile(join(SRC_DIR, 'partials', 'resume-redirect.html'), 'utf8')
+  for (const redirect of RESUME_REDIRECTS) {
+    const html = injectVersionedResumeLinks(
+      interpolate(redirectTemplate, { CANONICAL_URL: redirect.canonicalUrl }),
+      site.resumeUrl,
+    )
+    await writeGenerated(redirect.outputPath, html, 'src/partials/resume-redirect.html')
+    written.push(redirect.outputPath)
+  }
+
+  console.log(`\nBuild complete — ${written.length} pages generated.`)
+  return { written }
 }
 
-build().catch((err) => {
-  console.error('\nBuild failed:', err.message)
-  process.exit(1)
-})
+// Only run when executed directly (`node scripts/build.mjs`), not when
+// imported — dev.mjs imports build() and calls it in-process instead.
+if (fileURLToPath(import.meta.url) === process.argv[1]) {
+  build().catch((err) => {
+    console.error('\nBuild failed:', err.message)
+    process.exit(1)
+  })
+}
