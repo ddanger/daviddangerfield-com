@@ -4,6 +4,7 @@ import { watch } from 'node:fs'
 import { dirname, extname, join, normalize, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build as buildSite } from './build.mjs'
+import { bundleJs } from './bundle-js.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -22,6 +23,7 @@ const contentTypes = new Map([
   ['.jpeg', 'image/jpeg'],
   ['.svg', 'image/svg+xml'],
   ['.webmanifest', 'application/manifest+json; charset=utf-8'],
+  ['.woff2', 'font/woff2'],
   ['.xml', 'application/xml; charset=utf-8'],
 ])
 
@@ -66,9 +68,9 @@ async function resolveRequestPath(requestUrl) {
   return null
 }
 
-// Calls build.mjs's build() in-process rather than shelling out to
-// `npm run build` — faster rebuild-on-save, and skips the prettier format
-// pass (dev output is transient, never committed, so unformatted is fine).
+// Calls build helpers in-process rather than shelling out to `npm run build` —
+// faster rebuild-on-save, and skips the prettier format pass (dev output is
+// transient, never committed, so unformatted is fine).
 async function runBuild(reason = 'initial') {
   if (buildRunning) {
     buildQueued = true
@@ -79,6 +81,7 @@ async function runBuild(reason = 'initial') {
   console.log(`\n[dev] Build started (${reason})`)
 
   try {
+    await bundleJs()
     await buildSite()
     console.log('[dev] Build finished')
   } catch (err) {
@@ -100,6 +103,9 @@ function queueBuild(filename) {
 function startWatcher() {
   watch(join(ROOT_DIR, 'src'), { recursive: true }, (_eventType, filename) => {
     queueBuild(filename)
+  })
+  watch(join(ROOT_DIR, 'styles.css'), (_eventType, filename) => {
+    queueBuild(filename || 'styles.css')
   })
 }
 
@@ -127,7 +133,7 @@ function startServer() {
 
   server.listen(PORT, () => {
     console.log(`[dev] Serving http://localhost:${PORT}`)
-    console.log('[dev] Watching src/ and rebuilding generated pages on changes')
+    console.log('[dev] Watching src/ and styles.css; rebuilding on changes')
   })
 }
 

@@ -6,22 +6,27 @@
     "setup:init": "node scripts/setup.mjs && npm install",
     "prepare": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit",
     "dev": "node scripts/dev.mjs",
+    "build:js": "node scripts/bundle-js.mjs",
     "build:html": "node scripts/build.mjs",
     "generate:resume-share": "node scripts/generate-resume-share.mjs --input Resume-David-Dangerfield.pdf --output images/social/resume-share.png",
     "update:resume": "node scripts/update-resume.mjs",
     "validate:source": "node scripts/validate-source.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "check:uptime": "node scripts/uptime-check.mjs",
-    "format": "prettier --write \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" script.js",
-    "format:check": "prettier --check \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" script.js",
-    "build": "npm run build:html && npm run format",
+    "format": "prettier --write \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\"",
+    "format:check": "prettier --check \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\"",
+    "build": "npm run build:js && npm run build:html && npm run format",
     "verify:generated": "node scripts/verify-generated.mjs",
     "test": "node --test scripts/lib/*.test.mjs"
   },
   "devDependencies": {
+    "esbuild": "^0.25.0",
     "prettier": "^3.3.3"
   },
   "engines": {
     "node": ">=24"
+  },
+  "allowScripts": {
+    "esbuild@0.25.0": true
   }
 }

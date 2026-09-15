@@ -2,7 +2,8 @@
  * BUILD-TIME ONLY — never imported by browser code.
  *
  * Assembles static HTML pages from:
- *   src/site.json                     — shared site config (GA, theme, fonts)
+ *   src/site.json                     — shared site config (GA, theme)
+ *   styles.css                        — inlined into each page <head>
  *   src/partials/layout.html          — full document shell
  *   src/partials/header.html          — shared <header>
  *   src/partials/footer.html          — shared <footer> (with schedule-link token)
@@ -48,8 +49,9 @@ function interpolate(template, vars) {
 // Build the full <head> content string from page config + site config.
 // All optional fields (keywords, robots, og:image, twitter, schema) are
 // omitted when absent so each page ships exactly the tags it needs.
+// stylesCss is inlined to avoid a render-blocking stylesheet request.
 // ---------------------------------------------------------------------------
-function buildHeadContent(page, site) {
+function buildHeadContent(page, site, stylesCss) {
   const lines = []
 
   lines.push(`  <meta charset="UTF-8" />`)
@@ -57,17 +59,22 @@ function buildHeadContent(page, site) {
   lines.push(`  <title>${page.meta.title}</title>`)
   lines.push(`  <meta name="description" content="${page.meta.description}" />`)
 
-  // Google Analytics
-  lines.push(
-    `  <script async src="https://www.googletagmanager.com/gtag/js?id=${site.gaId}"></script>`,
-  )
+  // Defer Google Analytics until after load so it stays off the critical path.
   lines.push(`  <script>`)
-  lines.push(`    window.dataLayer = window.dataLayer || [];`)
-  lines.push(`    function gtag() {`)
-  lines.push(`      dataLayer.push(arguments);`)
-  lines.push(`    }`)
-  lines.push(`    gtag('js', new Date());`)
-  lines.push(`    gtag('config', '${site.gaId}');`)
+  lines.push(`    window.addEventListener('load', function () {`)
+  lines.push(`      var s = document.createElement('script')`)
+  lines.push(`      s.src = 'https://www.googletagmanager.com/gtag/js?id=${site.gaId}'`)
+  lines.push(`      s.async = true`)
+  lines.push(`      s.onload = function () {`)
+  lines.push(`        window.dataLayer = window.dataLayer || []`)
+  lines.push(`        function gtag() {`)
+  lines.push(`          dataLayer.push(arguments)`)
+  lines.push(`        }`)
+  lines.push(`        gtag('js', new Date())`)
+  lines.push(`        gtag('config', '${site.gaId}')`)
+  lines.push(`      }`)
+  lines.push(`      document.head.appendChild(s)`)
+  lines.push(`    })`)
   lines.push(`  </script>`)
 
   if (page.meta.keywords) {
@@ -116,10 +123,17 @@ function buildHeadContent(page, site) {
   lines.push(`  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />`)
   lines.push(`  <link rel="manifest" href="/site.webmanifest" />`)
   lines.push(`  <link rel="canonical" href="${page.meta.canonical}" />`)
-  lines.push(`  <link rel="preconnect" href="https://fonts.googleapis.com" />`)
-  lines.push(`  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />`)
-  lines.push(`  <link href="${site.fontsHref}" rel="stylesheet" />`)
-  lines.push(`  <link rel="stylesheet" href="/styles.css" />`)
+  lines.push(
+    `  <link rel="preload" href="/fonts/fraunces-latin-700.woff2" as="font" type="font/woff2" crossorigin />`,
+  )
+  lines.push(
+    `  <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />`,
+  )
+  // Escape any accidental </style> sequences so inlining cannot close the tag early.
+  const safeCss = stylesCss.replace(/<\/style/gi, '<\\/style')
+  lines.push(`  <style>`)
+  lines.push(safeCss)
+  lines.push(`  </style>`)
 
   // Optional JSON-LD structured data
   if (page.schemaJson) {
@@ -166,6 +180,7 @@ async function writeGenerated(outputPath, html, sourceLabel) {
 
 export async function build() {
   const site = JSON.parse(await readFile(join(SRC_DIR, 'site.json'), 'utf8'))
+  const stylesCss = await readFile(join(ROOT_DIR, 'styles.css'), 'utf8')
   const layout = await readFile(join(SRC_DIR, 'partials', 'layout.html'), 'utf8')
   const headerPartial = injectVersionedResumeLinks(
     await readFile(join(SRC_DIR, 'partials', 'header.html'), 'utf8'),
@@ -196,7 +211,7 @@ export async function build() {
       site.resumeUrl,
     )
 
-    const headContent = buildHeadContent(page, site)
+    const headContent = buildHeadContent(page, site, stylesCss)
     const footer = interpolate(footerPartial, {
       FOOTER_SCHEDULE_LINK: buildFooterScheduleLink(page.footer),
     })

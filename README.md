@@ -4,7 +4,7 @@ Static personal website for `ddanger.github.io`.
 
 ## The Important Rule
 
-Edit the source files, then commit the generated HTML too.
+Edit the source files, then commit the generated HTML and `script.js` too.
 
 GitHub Pages serves this repository as static files from the repo root. That means these generated files must stay committed:
 
@@ -12,18 +12,19 @@ GitHub Pages serves this repository as static files from the repo root. That mea
 - `about/index.html`
 - `services/index.html`
 - `contact/index.html`
+- `script.js`
 
-Do not edit those generated HTML files by hand for normal page changes. Edit `src/`, run the build, and commit the generated output that changes.
+Do not edit those generated files by hand for normal page changes. Edit `src/` (and `styles.css`), run the build, and commit the generated output that changes.
 
-CI verifies that the committed HTML matches the source. A post-merge workflow can sync generated HTML on `main`, but pull requests should still include generated HTML changes.
+CI verifies that the committed artifacts match the source. A post-merge workflow can sync generated HTML on `main`, but pull requests should still include generated changes.
 
 ## Daily Workflow
 
 1. Run `npm install` if dependencies are not installed.
 2. Run `npm run dev`.
-3. Edit source files under `src/`, or directly served files like `styles.css` and `script.js`.
+3. Edit source files under `src/`, or `styles.css` (inlined into HTML at build time).
 4. Before committing, run `npm run build`.
-5. Commit both your source changes and any generated HTML changes.
+5. Commit both your source changes and any generated HTML / `script.js` changes.
 
 ## Source vs Generated Files
 
@@ -33,16 +34,17 @@ Use these files for normal edits:
 - `src/pages/*/meta.json` - page metadata and output paths
 - `src/pages/*/content.html` - page body content
 - `src/partials/*.html` - shared layout, header, and footer
-- `src/client/` - source JavaScript modules
-- `styles.css` - global styles served directly
-- `script.js` - root client script served directly
+- `src/client/` - source JavaScript modules (bundled into `script.js`)
+- `styles.css` - global styles (inlined into each page `<head>` at build time)
+- `fonts/` - self-hosted woff2 font files
 
-These files are generated from `src/` and should be committed after running the build:
+These files are generated and should be committed after running the build:
 
 - `index.html`
 - `about/index.html`
 - `services/index.html`
 - `contact/index.html`
+- `script.js`
 
 ## Commands
 
