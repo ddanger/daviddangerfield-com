@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process'
+import { checkCommand, hasDrawtextFilter, HOMEBREW_FFMPEG_FULL_BIN } from './lib/ffmpeg.mjs'
 
 function fail(message) {
   console.error(`Error: ${message}`)
@@ -21,19 +22,6 @@ function run(bin, args, opts = {}) {
   return true
 }
 
-function capture(bin, args) {
-  return spawnSync(bin, args, { encoding: 'utf8' })
-}
-
-function hasDrawtextFilter(ffmpegBin) {
-  const check = capture(ffmpegBin, ['-hide_banner', '-filters'])
-  if (check.error || check.status !== 0) {
-    return false
-  }
-
-  return check.stdout.includes('drawtext')
-}
-
 function ensureFfmpegFullOnMac() {
   if (process.platform !== 'darwin') {
     console.log('Skipping Homebrew ffmpeg-full setup (non-macOS platform).')
@@ -47,10 +35,10 @@ function ensureFfmpegFullOnMac() {
     )
   }
 
-  const ffmpegCandidates = ['ffmpeg', '/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg']
+  const ffmpegCandidates = ['ffmpeg', HOMEBREW_FFMPEG_FULL_BIN]
 
   for (const bin of ffmpegCandidates) {
-    const versionCheck = capture(bin, ['-version'])
+    const versionCheck = checkCommand(bin, ['-version'])
     if (versionCheck.error || versionCheck.status !== 0) {
       continue
     }
@@ -67,8 +55,7 @@ function ensureFfmpegFullOnMac() {
     fail('Failed to install ffmpeg-full with Homebrew.')
   }
 
-  const fullBin = '/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg'
-  if (!hasDrawtextFilter(fullBin)) {
+  if (!hasDrawtextFilter(HOMEBREW_FFMPEG_FULL_BIN)) {
     fail(
       'ffmpeg-full installed but drawtext filter is still unavailable. Check Homebrew installation.',
     )

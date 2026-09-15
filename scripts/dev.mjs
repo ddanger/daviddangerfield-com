@@ -1,9 +1,10 @@
 import { createServer } from 'node:http'
 import { access, readFile, stat } from 'node:fs/promises'
-import { spawn } from 'node:child_process'
 import { watch } from 'node:fs'
 import { dirname, extname, join, normalize, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { build as buildSite } from './build.mjs'
+import { bundleJs } from './bundle-js.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -22,6 +23,7 @@ const contentTypes = new Map([
   ['.jpeg', 'image/jpeg'],
   ['.svg', 'image/svg+xml'],
   ['.webmanifest', 'application/manifest+json; charset=utf-8'],
+  ['.woff2', 'font/woff2'],
   ['.xml', 'application/xml; charset=utf-8'],
 ])
 
@@ -66,7 +68,10 @@ async function resolveRequestPath(requestUrl) {
   return null
 }
 
-function runBuild(reason = 'initial') {
+// Calls build helpers in-process rather than shelling out to `npm run build` —
+// faster rebuild-on-save, and skips the prettier format pass (dev output is
+// transient, never committed, so unformatted is fine).
+async function runBuild(reason = 'initial') {
   if (buildRunning) {
     buildQueued = true
     return
@@ -75,20 +80,19 @@ function runBuild(reason = 'initial') {
   buildRunning = true
   console.log(`\n[dev] Build started (${reason})`)
 
-  const build = spawn('npm', ['run', 'build'], {
-    cwd: ROOT_DIR,
-    stdio: 'inherit',
-  })
-
-  build.on('exit', (code) => {
+  try {
+    await bundleJs()
+    await buildSite()
+    console.log('[dev] Build finished')
+  } catch (err) {
+    console.log(`[dev] Build failed: ${err.message}`)
+  } finally {
     buildRunning = false
-    console.log(code === 0 ? '[dev] Build finished' : `[dev] Build failed with exit code ${code}`)
-
     if (buildQueued) {
       buildQueued = false
       runBuild('queued change')
     }
-  })
+  }
 }
 
 function queueBuild(filename) {
@@ -99,6 +103,9 @@ function queueBuild(filename) {
 function startWatcher() {
   watch(join(ROOT_DIR, 'src'), { recursive: true }, (_eventType, filename) => {
     queueBuild(filename)
+  })
+  watch(join(ROOT_DIR, 'styles.css'), (_eventType, filename) => {
+    queueBuild(filename || 'styles.css')
   })
 }
 
@@ -126,7 +133,7 @@ function startServer() {
 
   server.listen(PORT, () => {
     console.log(`[dev] Serving http://localhost:${PORT}`)
-    console.log('[dev] Watching src/ and rebuilding generated pages on changes')
+    console.log('[dev] Watching src/ and styles.css; rebuilding on changes')
   })
 }
 

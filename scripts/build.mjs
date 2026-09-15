@@ -2,25 +2,32 @@
  * BUILD-TIME ONLY — never imported by browser code.
  *
  * Assembles static HTML pages from:
- *   src/site.json                     — shared site config (GA, theme, fonts)
+ *   src/site.json                     — shared site config (GA, theme)
+ *   styles.css                        — inlined into each page <head>
  *   src/partials/layout.html          — full document shell
  *   src/partials/header.html          — shared <header>
  *   src/partials/footer.html          — shared <footer> (with schedule-link token)
  *   src/pages/{page}/content.html     — per-page <main> content
  *   src/pages/{page}/meta.json        — per-page metadata, outputPath, footer config
+ *   src/partials/resume-redirect.html — the bare resume/cv meta-refresh pages
  *
- * Pages are auto-discovered by scanning src/pages/ subdirectories.
- * To add a page: create src/pages/{page}/content.html and meta.json.
+ * Pages are auto-discovered by scanning src/pages/ subdirectories (see
+ * scripts/lib/routes.mjs). To add a page: create src/pages/{page}/content.html
+ * and meta.json. The two resume-redirect pages are a fixed, separate list
+ * (scripts/lib/resume-redirects.mjs) since they don't share layout.html.
  *
  * Output: overwrites each route's static HTML file in-place.
  *
- * Usage: node scripts/build.mjs
+ * Usage: node scripts/build.mjs — or import { build } from './build.mjs'
+ * to run it in-process (see dev.mjs).
  */
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { discoverPages } from './lib/routes.mjs'
+import { missingRequiredFields } from './lib/meta-schema.mjs'
+import { RESUME_REDIRECTS } from './lib/resume-redirects.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -42,8 +49,9 @@ function interpolate(template, vars) {
 // Build the full <head> content string from page config + site config.
 // All optional fields (keywords, robots, og:image, twitter, schema) are
 // omitted when absent so each page ships exactly the tags it needs.
+// stylesCss is inlined to avoid a render-blocking stylesheet request.
 // ---------------------------------------------------------------------------
-function buildHeadContent(page, site) {
+function buildHeadContent(page, site, stylesCss) {
   const lines = []
 
   lines.push(`  <meta charset="UTF-8" />`)
@@ -51,17 +59,22 @@ function buildHeadContent(page, site) {
   lines.push(`  <title>${page.meta.title}</title>`)
   lines.push(`  <meta name="description" content="${page.meta.description}" />`)
 
-  // Google Analytics
-  lines.push(
-    `  <script async src="https://www.googletagmanager.com/gtag/js?id=${site.gaId}"></script>`,
-  )
+  // Defer Google Analytics until after load so it stays off the critical path.
   lines.push(`  <script>`)
-  lines.push(`    window.dataLayer = window.dataLayer || [];`)
-  lines.push(`    function gtag() {`)
-  lines.push(`      dataLayer.push(arguments);`)
-  lines.push(`    }`)
-  lines.push(`    gtag('js', new Date());`)
-  lines.push(`    gtag('config', '${site.gaId}');`)
+  lines.push(`    window.addEventListener('load', function () {`)
+  lines.push(`      var s = document.createElement('script')`)
+  lines.push(`      s.src = 'https://www.googletagmanager.com/gtag/js?id=${site.gaId}'`)
+  lines.push(`      s.async = true`)
+  lines.push(`      s.onload = function () {`)
+  lines.push(`        window.dataLayer = window.dataLayer || []`)
+  lines.push(`        function gtag() {`)
+  lines.push(`          dataLayer.push(arguments)`)
+  lines.push(`        }`)
+  lines.push(`        gtag('js', new Date())`)
+  lines.push(`        gtag('config', '${site.gaId}')`)
+  lines.push(`      }`)
+  lines.push(`      document.head.appendChild(s)`)
+  lines.push(`    })`)
   lines.push(`  </script>`)
 
   if (page.meta.keywords) {
@@ -110,10 +123,17 @@ function buildHeadContent(page, site) {
   lines.push(`  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />`)
   lines.push(`  <link rel="manifest" href="/site.webmanifest" />`)
   lines.push(`  <link rel="canonical" href="${page.meta.canonical}" />`)
-  lines.push(`  <link rel="preconnect" href="https://fonts.googleapis.com" />`)
-  lines.push(`  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />`)
-  lines.push(`  <link href="${site.fontsHref}" rel="stylesheet" />`)
-  lines.push(`  <link rel="stylesheet" href="/styles.css" />`)
+  lines.push(
+    `  <link rel="preload" href="/fonts/fraunces-latin-700.woff2" as="font" type="font/woff2" crossorigin />`,
+  )
+  lines.push(
+    `  <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />`,
+  )
+  // Escape any accidental </style> sequences so inlining cannot close the tag early.
+  const safeCss = stylesCss.replace(/<\/style/gi, '<\\/style')
+  lines.push(`  <style>`)
+  lines.push(safeCss)
+  lines.push(`  </style>`)
 
   // Optional JSON-LD structured data
   if (page.schemaJson) {
@@ -145,8 +165,22 @@ function injectVersionedResumeLinks(content, resumeUrl) {
   return content.replaceAll('/Resume-David-Dangerfield.pdf', resumeUrl)
 }
 
-async function build() {
+async function writeGenerated(outputPath, html, sourceLabel) {
+  const generatedComment = [
+    `<!-- GENERATED FILE — do not edit directly. -->`,
+    `<!-- Source: ${sourceLabel} -->`,
+    `<!-- Regenerate: npm run build -->`,
+  ].join('\n')
+
+  const fullPath = join(ROOT_DIR, outputPath)
+  await mkdir(dirname(fullPath), { recursive: true })
+  await writeFile(fullPath, `${generatedComment}\n${html}`, 'utf8')
+  console.log(`  ✓ ${outputPath}`)
+}
+
+export async function build() {
   const site = JSON.parse(await readFile(join(SRC_DIR, 'site.json'), 'utf8'))
+  const stylesCss = await readFile(join(ROOT_DIR, 'styles.css'), 'utf8')
   const layout = await readFile(join(SRC_DIR, 'partials', 'layout.html'), 'utf8')
   const headerPartial = injectVersionedResumeLinks(
     await readFile(join(SRC_DIR, 'partials', 'header.html'), 'utf8'),
@@ -158,11 +192,18 @@ async function build() {
   )
 
   const discovered = await discoverPages(ROOT_DIR)
-  const broken = discovered.filter((p) => p.metaError)
-  if (broken.length > 0) {
-    const details = broken.map((p) => `  - ${p.pageId}: ${p.metaError}`).join('\n')
-    throw new Error(`Invalid meta.json for ${broken.length} page(s):\n${details}`)
+  const problems = discovered.flatMap((p) => {
+    if (p.metaError) return [`${p.pageId}: ${p.metaError}`]
+    return missingRequiredFields(p.meta).map(
+      (field) => `${p.pageId}: missing required field ${field}`,
+    )
+  })
+  if (problems.length > 0) {
+    const details = problems.map((p) => `  - ${p}`).join('\n')
+    throw new Error(`Invalid meta.json:\n${details}`)
   }
+
+  const written = []
 
   for (const { pageId, pageDir, meta: page } of discovered) {
     const pageContent = injectVersionedResumeLinks(
@@ -170,7 +211,7 @@ async function build() {
       site.resumeUrl,
     )
 
-    const headContent = buildHeadContent(page, site)
+    const headContent = buildHeadContent(page, site, stylesCss)
     const footer = interpolate(footerPartial, {
       FOOTER_SCHEDULE_LINK: buildFooterScheduleLink(page.footer),
     })
@@ -182,22 +223,33 @@ async function build() {
       FOOTER: footer,
     })
 
-    const generatedComment = [
-      `<!-- GENERATED FILE — do not edit directly. -->`,
-      `<!-- Source: src/pages/${pageId}/content.html + src/partials/layout.html -->`,
-      `<!-- Regenerate: npm run build -->`,
-    ].join('\n')
-
-    const outputPath = join(ROOT_DIR, page.outputPath)
-    await mkdir(dirname(outputPath), { recursive: true })
-    await writeFile(outputPath, `${generatedComment}\n${html}`, 'utf8')
-    console.log(`  ✓ ${page.outputPath}`)
+    await writeGenerated(
+      page.outputPath,
+      html,
+      `src/pages/${pageId}/content.html + src/partials/layout.html`,
+    )
+    written.push(page.outputPath)
   }
 
-  console.log(`\nBuild complete — ${discovered.length} pages generated.`)
+  const redirectTemplate = await readFile(join(SRC_DIR, 'partials', 'resume-redirect.html'), 'utf8')
+  for (const redirect of RESUME_REDIRECTS) {
+    const html = injectVersionedResumeLinks(
+      interpolate(redirectTemplate, { CANONICAL_URL: redirect.canonicalUrl }),
+      site.resumeUrl,
+    )
+    await writeGenerated(redirect.outputPath, html, 'src/partials/resume-redirect.html')
+    written.push(redirect.outputPath)
+  }
+
+  console.log(`\nBuild complete — ${written.length} pages generated.`)
+  return { written }
 }
 
-build().catch((err) => {
-  console.error('\nBuild failed:', err.message)
-  process.exit(1)
-})
+// Only run when executed directly (`node scripts/build.mjs`), not when
+// imported — dev.mjs imports build() and calls it in-process instead.
+if (fileURLToPath(import.meta.url) === process.argv[1]) {
+  build().catch((err) => {
+    console.error('\nBuild failed:', err.message)
+    process.exit(1)
+  })
+}

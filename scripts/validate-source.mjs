@@ -4,20 +4,7 @@ import { access, readFile } from 'node:fs/promises'
 import { constants as fsConstants } from 'node:fs'
 import path from 'node:path'
 import { discoverPages, HELPER_ROUTES, ROOT_DIR } from './lib/routes.mjs'
-
-const REQUIRED_META_FIELDS = [
-  'meta.title',
-  'meta.description',
-  'meta.canonical',
-  'meta.og.title',
-  'meta.og.description',
-  'meta.og.type',
-  'meta.og.url',
-]
-
-function getByPath(obj, dottedPath) {
-  return dottedPath.split('.').reduce((acc, key) => (acc ? acc[key] : undefined), obj)
-}
+import { missingRequiredFields } from './lib/meta-schema.mjs'
 
 function isExternalOrIgnored(ref) {
   if (!ref) return true
@@ -177,11 +164,8 @@ async function main() {
       errors.push(`${page.pageId}: missing required meta.json or content.html`)
     }
 
-    for (const field of REQUIRED_META_FIELDS) {
-      const value = getByPath(page.meta, field)
-      if (!value || typeof value !== 'string') {
-        errors.push(`${page.pageId}: missing required field ${field}`)
-      }
+    for (const field of missingRequiredFields(page.meta)) {
+      errors.push(`${page.pageId}: missing required field ${field}`)
     }
 
     if (!page.meta.outputPath || typeof page.meta.outputPath !== 'string') {

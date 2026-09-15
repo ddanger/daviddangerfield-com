@@ -22,6 +22,7 @@ import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
+import { checkCommand, hasDrawtextFilter, HOMEBREW_FFMPEG_FULL_BIN } from './lib/ffmpeg.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -118,25 +119,12 @@ async function ensureReadable(pathToFile, label) {
   }
 }
 
-function checkCommand(bin, args) {
-  return spawnSync(bin, args, { encoding: 'utf8' })
-}
-
-function hasDrawtextFilter(ffmpegBin) {
-  const check = checkCommand(ffmpegBin, ['-hide_banner', '-filters'])
-  if (check.error || check.status !== 0) {
-    return false
-  }
-
-  return check.stdout.includes('drawtext')
-}
-
 function resolveFfmpegBin(preferredBin = '') {
   const candidates = [
     preferredBin,
     process.env.FFMPEG_BIN || '',
     'ffmpeg',
-    process.platform === 'darwin' ? '/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg' : '',
+    process.platform === 'darwin' ? HOMEBREW_FFMPEG_FULL_BIN : '',
   ]
 
   const seen = new Set()
