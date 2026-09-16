@@ -1,12 +1,12 @@
 {
   "outputPath": "about/index.html",
   "meta": {
-    "title": "About | Principal Software Engineer | David Dangerfield",
-    "description": "About David Dangerfield: a hands-on Principal Software Engineer with 20+ years from deep systems to modern UI, plus an MS in Computer Science from Purdue.",
+    "title": "About | Software Engineer | Frontend Architecture | Backend Systems | David Dangerfield",
+    "description": "About David Dangerfield: a hands-on Software Engineer with 20+ years from deep systems to modern UI, plus an MS in Computer Science from Purdue.",
     "canonical": "https://daviddangerfield.com/about/",
     "og": {
-      "title": "About David Dangerfield | Principal Software Engineer",
-      "description": "Delivering principal-level engineering across payments, healthcare, consumer products, and enterprise software.",
+      "title": "About David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
+      "description": "Delivering frontend architecture and backend engineering across payments, healthcare, consumer products, and enterprise software.",
       "type": "profile",
       "url": "https://daviddangerfield.com/about/"
     }

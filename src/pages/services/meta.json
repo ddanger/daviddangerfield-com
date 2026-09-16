@@ -1,12 +1,12 @@
 {
   "outputPath": "services/index.html",
   "meta": {
-    "title": "Technical Expertise | Principal Software Engineer | David Dangerfield",
+    "title": "Technical Expertise | Software Engineer | Frontend Architecture | Backend Systems | David Dangerfield",
     "description": "Technical expertise across TypeScript, Java, Vue, React, cloud infrastructure, legacy modernization, and AI-accelerated delivery.",
     "canonical": "https://daviddangerfield.com/services/",
     "og": {
-      "title": "Technical Expertise | David Dangerfield, Principal Software Engineer",
-      "description": "Full-stack engineering depth from deep systems and backend services to modern frontend architecture and agentic AI-accelerated delivery.",
+      "title": "Technical Expertise | David Dangerfield, Software Engineer | Frontend Architecture | Backend Systems",
+      "description": "Frontend architecture depth, backed by real backend systems experience, with agentic AI-accelerated delivery.",
       "type": "website",
       "url": "https://daviddangerfield.com/services/"
     }
