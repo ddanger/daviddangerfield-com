@@ -1,12 +1,12 @@
 {
   "outputPath": "index.html",
   "meta": {
-    "title": "David Dangerfield | Principal Software Engineer",
-    "description": "Hands-on Principal Software Engineer shipping full-stack software across payments, healthcare, consumer products, and enterprise platforms.",
-    "keywords": "Principal Software Engineer, hands-on principal engineer, software engineering consultant, Vue.js developer, TypeScript engineer, legacy modernization",
+    "title": "David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
+    "description": "Hands-on Software Engineer leading frontend architecture and contributing backend service code across payments, healthcare, consumer products, and enterprise platforms.",
+    "keywords": "Software Engineer, frontend architecture, backend systems, software engineering consultant, Vue.js developer, TypeScript engineer, legacy modernization",
     "canonical": "https://daviddangerfield.com/",
     "og": {
-      "title": "David Dangerfield | Principal Software Engineer",
+      "title": "David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
       "description": "20+ years across high-stakes software, from deep systems and legacy modernization to modern UI delivery with agentic AI tooling.",
       "type": "website",
       "url": "https://daviddangerfield.com/",
@@ -21,7 +21,7 @@
     },
     "twitter": {
       "card": "summary_large_image",
-      "title": "David Dangerfield | Principal Software Engineer",
+      "title": "David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
       "description": "Hands-on engineering across payments, healthcare, consumer products, and enterprise software.",
       "image": "https://daviddangerfield.com/images/social/social-share.jpg",
       "imageAlt": "Social sharing card image for David Dangerfield."
@@ -31,7 +31,7 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "David Dangerfield",
-    "jobTitle": "Principal Software Engineer",
+    "jobTitle": "Software Engineer | Frontend Architecture | Backend Systems",
     "url": "https://daviddangerfield.com",
     "telephone": "(612) 293-9138",
     "sameAs": ["https://linkedin.com/in/dangerfield"],
