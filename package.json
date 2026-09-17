@@ -16,7 +16,6 @@
     "format": "prettier --write \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\"",
     "format:check": "prettier --check \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\"",
     "build": "npm run build:js && npm run build:html && npm run format",
-    "verify:generated": "node scripts/verify-generated.mjs",
     "test": "node --test scripts/lib/*.test.mjs"
   },
   "devDependencies": {

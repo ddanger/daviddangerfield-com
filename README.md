@@ -8,11 +8,6 @@ Edit the source files, run `npm run build`, and check the output in `dist/`.
 `dist/` is git-ignored — it's the published site, rebuilt fresh on every
 deploy. Never hand-edit anything under `dist/`.
 
-The repo root also has a few committed HTML files and a `script.js`
-(`index.html`, `about/index.html`, `services/index.html`,
-`contact/index.html`) served by a separate host, unrelated to `npm run
-build`. Leave them alone.
-
 ## Hosting
 
 Published on Cloudflare Pages: `npm run build`, output directory `dist`.
@@ -68,7 +63,7 @@ Run the checks CI cares about:
 
 ```sh
 npm run validate:source
-npm run verify:generated
+npm run build
 npm run format:check
 ```
 
