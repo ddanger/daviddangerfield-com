@@ -8,6 +8,7 @@ import { bundleJs } from './bundle-js.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
+const DIST_DIR = join(ROOT_DIR, 'dist')
 const PORT = Number(process.env.PORT || 8000)
 
 const contentTypes = new Map([
@@ -32,7 +33,7 @@ let buildRunning = false
 let rebuildTimer
 
 function isInsideRoot(pathname) {
-  const relativePath = relative(ROOT_DIR, pathname)
+  const relativePath = relative(DIST_DIR, pathname)
   return relativePath === '' || (!relativePath.startsWith('..') && !relativePath.startsWith('/'))
 }
 
@@ -45,10 +46,26 @@ async function fileExists(pathname) {
   }
 }
 
+// Minimal, local-only stand-in for the _redirects convention read from
+// dist/_redirects — exact-path matches only (the full convention also
+// supports splats/placeholders, which this repo doesn't use). Lets
+// `npm run dev` follow the same redirects the live site does.
+async function loadRedirects() {
+  const content = await readFile(join(DIST_DIR, '_redirects'), 'utf8').catch(() => '')
+  return content
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith('#'))
+    .map((line) => {
+      const [source, target, status] = line.split(/\s+/)
+      return { source, target, status: Number(status) || 301 }
+    })
+}
+
 async function resolveRequestPath(requestUrl) {
   const url = new URL(requestUrl, `http://localhost:${PORT}`)
   const decodedPath = decodeURIComponent(url.pathname)
-  const requestedPath = normalize(join(ROOT_DIR, decodedPath))
+  const requestedPath = normalize(join(DIST_DIR, decodedPath))
 
   if (!isInsideRoot(requestedPath)) return null
 
@@ -112,6 +129,15 @@ function startWatcher() {
 function startServer() {
   const server = createServer(async (req, res) => {
     try {
+      const requestPath = new URL(req.url || '/', `http://localhost:${PORT}`).pathname
+      const redirects = await loadRedirects()
+      const redirect = redirects.find((r) => r.source === requestPath)
+      if (redirect) {
+        res.writeHead(redirect.status, { location: redirect.target })
+        res.end()
+        return
+      }
+
       const filePath = await resolveRequestPath(req.url || '/')
 
       if (!filePath) {

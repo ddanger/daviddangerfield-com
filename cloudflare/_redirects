@@ -1,0 +1,9 @@
+# Cloudflare Pages edge redirects. Copied to dist/_redirects by
+# scripts/lib/static-assets.mjs's HOST_CONFIG_FILES on every build — that's
+# the filename Cloudflare Pages requires at the published root. Real HTTP
+# 301s: fast, no rendered content, correct for search engines.
+/about.html     /about/                                            301
+/contact.html   /contact/                                          301
+/services.html  /services/                                         301
+/schedule       https://calendly.com/daviddangerfield/recruiters   301
+/schedule/      https://calendly.com/daviddangerfield/recruiters   301

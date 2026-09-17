@@ -16,23 +16,45 @@
  * and meta.json. The two resume-redirect pages are a fixed, separate list
  * (scripts/lib/resume-redirects.mjs) since they don't share layout.html.
  *
- * Output: overwrites each route's static HTML file in-place.
+ * Output: dist/ (never committed — this is the published site). Assumes
+ * bundleJs() has already run (see bundle-js.mjs), since it both wipes dist/
+ * for the build and produces the script.js this build hashes for
+ * cache-busting. Also copies scripts/lib/static-assets.mjs's list of
+ * unchanged static files (fonts, images, icons, PDFs) and hosting-provider
+ * config (HOST_CONFIG_FILES, e.g. cloudflare/) into dist/.
  *
  * Usage: node scripts/build.mjs — or import { build } from './build.mjs'
  * to run it in-process (see dev.mjs).
  */
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { readFile, writeFile, mkdir, cp } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
 import { discoverPages } from './lib/routes.mjs'
 import { missingRequiredFields } from './lib/meta-schema.mjs'
 import { RESUME_REDIRECTS } from './lib/resume-redirects.mjs'
+import { STATIC_ASSET_PATHS, HOST_CONFIG_FILES } from './lib/static-assets.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
 const SRC_DIR = join(ROOT_DIR, 'src')
+const DIST_DIR = join(ROOT_DIR, 'dist')
+
+// dist/ is wiped by bundleJs() (which always runs first — see bundle-js.mjs)
+// so it starts from nothing on every build. This just needs it to exist.
+async function copyStaticAssets() {
+  await mkdir(DIST_DIR, { recursive: true })
+  for (const relPath of STATIC_ASSET_PATHS) {
+    await cp(join(ROOT_DIR, relPath), join(DIST_DIR, relPath), { recursive: true })
+  }
+  for (const { from, to } of HOST_CONFIG_FILES) {
+    await cp(join(ROOT_DIR, from), join(DIST_DIR, to), { recursive: true })
+  }
+  console.log(
+    `  ✓ ${STATIC_ASSET_PATHS.length} static assets, ${HOST_CONFIG_FILES.length} host config files`,
+  )
+}
 
 // ---------------------------------------------------------------------------
 // Template interpolation
@@ -206,17 +228,28 @@ async function writeGenerated(outputPath, html, sourceLabel) {
     `<!-- Regenerate: npm run build -->`,
   ].join('\n')
 
-  const fullPath = join(ROOT_DIR, outputPath)
+  const fullPath = join(DIST_DIR, outputPath)
   await mkdir(dirname(fullPath), { recursive: true })
   await writeFile(fullPath, `${generatedComment}\n${html}`, 'utf8')
-  console.log(`  ✓ ${outputPath}`)
+  console.log(`  ✓ dist/${outputPath}`)
 }
 
 export async function build() {
+  await copyStaticAssets()
+
   const site = JSON.parse(await readFile(join(SRC_DIR, 'site.json'), 'utf8'))
   const stylesCss = await readFile(join(ROOT_DIR, 'styles.css'), 'utf8')
   const layout = await readFile(join(SRC_DIR, 'partials', 'layout.html'), 'utf8')
-  const scriptVersion = hashScriptVersion(await readFile(join(ROOT_DIR, 'script.js')))
+  const scriptJs = await readFile(join(DIST_DIR, 'script.js')).catch((err) => {
+    if (err.code === 'ENOENT') {
+      throw new Error(
+        'dist/script.js not found. Run `npm run build:js` (or `npm run build`) first — ' +
+          'build.mjs hashes the bundled script.js for cache-busting and assumes it already exists.',
+      )
+    }
+    throw err
+  })
+  const scriptVersion = hashScriptVersion(scriptJs)
   const headerPartial = injectVersionedResumeLinks(
     await readFile(join(SRC_DIR, 'partials', 'header.html'), 'utf8'),
     site.resumeUrl,
