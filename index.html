@@ -12,20 +12,36 @@
       content="Hands-on Software Engineer leading frontend architecture and contributing backend service code across payments, healthcare, consumer products, and enterprise platforms."
     />
     <script>
-      window.addEventListener('load', function () {
-        var s = document.createElement('script')
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RTX3CPC1G4'
-        s.async = true
-        s.onload = function () {
-          window.dataLayer = window.dataLayer || []
-          function gtag() {
-            dataLayer.push(arguments)
+      ;(function () {
+        var id = 'G-RTX3CPC1G4'
+        var events = ['pointerdown', 'keydown', 'touchstart', 'scroll']
+        var started = false
+        function start() {
+          if (started) return
+          started = true
+          events.forEach(function (name) {
+            window.removeEventListener(name, start, true)
+          })
+          var s = document.createElement('script')
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id
+          s.async = true
+          s.onload = function () {
+            window.dataLayer = window.dataLayer || []
+            function gtag() {
+              dataLayer.push(arguments)
+            }
+            gtag('js', new Date())
+            gtag('config', id)
           }
-          gtag('js', new Date())
-          gtag('config', 'G-RTX3CPC1G4')
+          document.head.appendChild(s)
         }
-        document.head.appendChild(s)
-      })
+        events.forEach(function (name) {
+          window.addEventListener(name, start, { capture: true, passive: true, once: true })
+        })
+        window.addEventListener('load', function () {
+          setTimeout(start, 3000)
+        })
+      })()
     </script>
     <meta
       name="keywords"
@@ -866,6 +882,6 @@
       </div>
     </footer>
 
-    <script type="module" src="/script.js"></script>
+    <script type="module" src="/script.js?v=21358bda72"></script>
   </body>
 </html>
