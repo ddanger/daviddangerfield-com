@@ -25,6 +25,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createHash } from 'node:crypto'
 import { discoverPages } from './lib/routes.mjs'
 import { missingRequiredFields } from './lib/meta-schema.mjs'
 import { RESUME_REDIRECTS } from './lib/resume-redirects.mjs'
@@ -59,22 +60,43 @@ function buildHeadContent(page, site, stylesCss) {
   lines.push(`  <title>${page.meta.title}</title>`)
   lines.push(`  <meta name="description" content="${page.meta.description}" />`)
 
-  // Defer Google Analytics until after load so it stays off the critical path.
+  // Load Google Analytics lazily: on the first interaction, or a few seconds
+  // after load for visitors who never interact. Loading it on `load` put
+  // gtag.js (~172 KB) in the mobile LCP window, where it competed with the
+  // fonts for bandwidth and cost ~1.9s of simulated LCP.
   lines.push(`  <script>`)
-  lines.push(`    window.addEventListener('load', function () {`)
-  lines.push(`      var s = document.createElement('script')`)
-  lines.push(`      s.src = 'https://www.googletagmanager.com/gtag/js?id=${site.gaId}'`)
-  lines.push(`      s.async = true`)
-  lines.push(`      s.onload = function () {`)
-  lines.push(`        window.dataLayer = window.dataLayer || []`)
-  lines.push(`        function gtag() {`)
-  lines.push(`          dataLayer.push(arguments)`)
+  lines.push(`    ;(function () {`)
+  lines.push(`      var id = '${site.gaId}'`)
+  lines.push(`      var events = ['pointerdown', 'keydown', 'touchstart', 'scroll']`)
+  lines.push(`      var started = false`)
+  lines.push(`      function start() {`)
+  lines.push(`        if (started) return`)
+  lines.push(`        started = true`)
+  lines.push(`        events.forEach(function (name) {`)
+  lines.push(`          window.removeEventListener(name, start, true)`)
+  lines.push(`        })`)
+  lines.push(`        var s = document.createElement('script')`)
+  lines.push(`        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id`)
+  lines.push(`        s.async = true`)
+  lines.push(`        s.onload = function () {`)
+  lines.push(`          window.dataLayer = window.dataLayer || []`)
+  lines.push(`          function gtag() {`)
+  lines.push(`            dataLayer.push(arguments)`)
+  lines.push(`          }`)
+  lines.push(`          gtag('js', new Date())`)
+  lines.push(`          gtag('config', id)`)
   lines.push(`        }`)
-  lines.push(`        gtag('js', new Date())`)
-  lines.push(`        gtag('config', '${site.gaId}')`)
+  lines.push(`        document.head.appendChild(s)`)
   lines.push(`      }`)
-  lines.push(`      document.head.appendChild(s)`)
-  lines.push(`    })`)
+  lines.push(`      events.forEach(function (name) {`)
+  lines.push(
+    `        window.addEventListener(name, start, { capture: true, passive: true, once: true })`,
+  )
+  lines.push(`      })`)
+  lines.push(`      window.addEventListener('load', function () {`)
+  lines.push(`        setTimeout(start, 3000)`)
+  lines.push(`      })`)
+  lines.push(`    })()`)
   lines.push(`  </script>`)
 
   if (page.meta.keywords) {
@@ -165,6 +187,18 @@ function injectVersionedResumeLinks(content, resumeUrl) {
   return content.replaceAll('/Resume-David-Dangerfield.pdf', resumeUrl)
 }
 
+// ---------------------------------------------------------------------------
+// script.js is served with a long Browser Cache TTL, so it needs a
+// cache-busting query param that changes whenever its content does. Rather
+// than a manually-bumped version (like resumeVersion in site.json), this
+// hashes the already-bundled script.js — deterministic, so `npm run build`
+// produces the same {{SCRIPT_VERSION}} on every machine/CI run as long as
+// the bundled output is unchanged, and it can't be forgotten on a deploy.
+// ---------------------------------------------------------------------------
+function hashScriptVersion(scriptJs) {
+  return createHash('sha256').update(scriptJs).digest('hex').slice(0, 10)
+}
+
 async function writeGenerated(outputPath, html, sourceLabel) {
   const generatedComment = [
     `<!-- GENERATED FILE — do not edit directly. -->`,
@@ -182,6 +216,7 @@ export async function build() {
   const site = JSON.parse(await readFile(join(SRC_DIR, 'site.json'), 'utf8'))
   const stylesCss = await readFile(join(ROOT_DIR, 'styles.css'), 'utf8')
   const layout = await readFile(join(SRC_DIR, 'partials', 'layout.html'), 'utf8')
+  const scriptVersion = hashScriptVersion(await readFile(join(ROOT_DIR, 'script.js')))
   const headerPartial = injectVersionedResumeLinks(
     await readFile(join(SRC_DIR, 'partials', 'header.html'), 'utf8'),
     site.resumeUrl,
@@ -221,6 +256,7 @@ export async function build() {
       HEADER: headerPartial,
       PAGE_CONTENT: pageContent,
       FOOTER: footer,
+      SCRIPT_VERSION: scriptVersion,
     })
 
     await writeGenerated(
