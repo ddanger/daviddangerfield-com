@@ -8,7 +8,7 @@ All coding agents in this repository must follow:
 
 ### Issue tracker
 
-Issues and specs live as GitHub issues in this repo (ddanger/ddanger.github.io); skills use the `gh` CLI. See `docs/agents/issue-tracker.md`.
+Issues and specs live as GitHub issues in this repo (ddanger/daviddangerfield-com); skills use the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

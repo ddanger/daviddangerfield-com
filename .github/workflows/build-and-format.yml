@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  generated-html:
+  build-and-format:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,14 +17,15 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
-          node-version: 24
+          node-version-file: .node-version
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify generated output is committed
-        run: npm run verify:generated
+      # dist/ isn't committed — this just confirms the build still succeeds.
+      - name: Build
+        run: npm run build
 
-      - name: Verify generated formatting
+      - name: Verify formatting
         run: npm run format:check
