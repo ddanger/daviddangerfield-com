@@ -306,7 +306,9 @@ main {
   gap: var(--space-4);
 }
 
+/* Named so it holds still during page transitions instead of fading. */
 .site-header {
+  view-transition-name: site-header;
   position: sticky;
   top: 0;
   z-index: var(--z-header);
@@ -723,6 +725,13 @@ main {
   }
 }
 
+/* Cross-document fades; browsers without support just load the page. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-links a,
   .btn,
@@ -743,9 +752,16 @@ main {
 }
 
 @media (width <= 900px) {
-  .hero-grid,
-  .grid-3 {
+  .hero-grid {
     grid-template-columns: 1fr;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-3 > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 
   .hero {
@@ -797,6 +813,10 @@ main {
 }
 
 @media (width <= 600px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
   .facts div {
     grid-template-columns: 1fr;
     gap: var(--space-1);
