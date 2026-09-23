@@ -34,6 +34,7 @@
     "jobTitle": "Software Engineer | Frontend Architecture | Backend Systems",
     "url": "https://daviddangerfield.com",
     "telephone": "(612) 293-9138",
+    "email": "contact@daviddangerfield.com",
     "sameAs": ["https://linkedin.com/in/dangerfield"],
     "address": {
       "@type": "PostalAddress",

@@ -2,7 +2,7 @@
  * BUILD-TIME ONLY — never imported by browser code.
  *
  * Assembles static HTML pages from:
- *   src/site.json                     — shared site config (GA, theme)
+ *   src/site.json                     — shared site config (theme, resume version)
  *   styles.css                        — inlined into each page <head>
  *   src/partials/layout.html          — full document shell
  *   src/partials/header.html          — shared <header>
@@ -82,44 +82,7 @@ function buildHeadContent(page, site, stylesCss) {
   lines.push(`  <title>${page.meta.title}</title>`)
   lines.push(`  <meta name="description" content="${page.meta.description}" />`)
 
-  // Load Google Analytics lazily: on the first interaction, or a few seconds
-  // after load for visitors who never interact. Loading it on `load` put
-  // gtag.js (~172 KB) in the mobile LCP window, where it competed with the
-  // fonts for bandwidth and cost ~1.9s of simulated LCP.
-  lines.push(`  <script>`)
-  lines.push(`    ;(function () {`)
-  lines.push(`      var id = '${site.gaId}'`)
-  lines.push(`      var events = ['pointerdown', 'keydown', 'touchstart', 'scroll']`)
-  lines.push(`      var started = false`)
-  lines.push(`      function start() {`)
-  lines.push(`        if (started) return`)
-  lines.push(`        started = true`)
-  lines.push(`        events.forEach(function (name) {`)
-  lines.push(`          window.removeEventListener(name, start, true)`)
-  lines.push(`        })`)
-  lines.push(`        var s = document.createElement('script')`)
-  lines.push(`        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id`)
-  lines.push(`        s.async = true`)
-  lines.push(`        s.onload = function () {`)
-  lines.push(`          window.dataLayer = window.dataLayer || []`)
-  lines.push(`          function gtag() {`)
-  lines.push(`            dataLayer.push(arguments)`)
-  lines.push(`          }`)
-  lines.push(`          gtag('js', new Date())`)
-  lines.push(`          gtag('config', id)`)
-  lines.push(`        }`)
-  lines.push(`        document.head.appendChild(s)`)
-  lines.push(`      }`)
-  lines.push(`      events.forEach(function (name) {`)
-  lines.push(
-    `        window.addEventListener(name, start, { capture: true, passive: true, once: true })`,
-  )
-  lines.push(`      })`)
-  lines.push(`      window.addEventListener('load', function () {`)
-  lines.push(`        setTimeout(start, 3000)`)
-  lines.push(`      })`)
-  lines.push(`    })()`)
-  lines.push(`  </script>`)
+  // No analytics or tracking scripts: see docs/adr/0001-performance-over-user-tracking.md.
 
   if (page.meta.keywords) {
     lines.push(`  <meta name="keywords" content="${page.meta.keywords}" />`)
@@ -223,7 +186,7 @@ function hashScriptVersion(scriptJs) {
 
 async function writeGenerated(outputPath, html, sourceLabel) {
   const generatedComment = [
-    `<!-- GENERATED FILE — do not edit directly. -->`,
+    `<!-- GENERATED FILE: do not edit directly. -->`,
     `<!-- Source: ${sourceLabel} -->`,
     `<!-- Regenerate: npm run build -->`,
   ].join('\n')

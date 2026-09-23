@@ -24,7 +24,6 @@ export const STATIC_ASSET_PATHS = [
   'robots.txt',
   'sitemap.xml',
   'Resume-David-Dangerfield.pdf',
-  'LinkedIn-Profile.pdf',
   'fonts',
   'images',
 ]

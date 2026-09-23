@@ -32,25 +32,25 @@
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* LAYOUT SHIFT (CLS) FIX — metric-matched font fallbacks.
+/* LAYOUT SHIFT (CLS) FIX: metric-matched font fallbacks.
    font-display: swap shows a fallback font immediately, then swaps to the
    real webfont once it loads. If the fallback's glyph widths/line-height
    don't match the webfont's, that swap reflows the page and shows up as
    layout shift (CLS). These @font-face rules use font-metrics-override
    (size-adjust/ascent-override/descent-override/line-gap-override) to make
    the local system font, during that brief fallback period, occupy the
-   exact same box as the real webfont — so the later swap causes no visible
+   exact same box as the real webfont, so the later swap causes no visible
    shift. Measured impact: CLS on / went from 0.0358 to 0.0012.
    Values computed empirically: measured real rendered widths of actual
    site text in the webfont, then swept size-adjust on the fallback
-   (Georgia Bold / Arial / Arial Bold — the real fallback faces these
+   (Georgia Bold / Arial / Arial Bold, the real fallback faces these
    stacks resolve to) to find the closest match, averaged across several
    real strings per font/weight. (The OS/2.xAvgCharWidth-derived formula
-   alone was off by 15-20 points for these fonts — don't recompute from
+   alone was off by 15-20 points for these fonts. Don't recompute from
    font-table metrics without calibrating against real rendered text.)
    Referenced as a distinct family name ('Fraunces Fallback' / 'Space
    Grotesk Fallback') inserted into the stack between the webfont and its
-   plain fallback — never used directly in any rule. */
+   plain fallback. Never used directly in any rule. */
 @font-face {
   font-family: 'Fraunces Fallback';
   src: local('Georgia Bold'), local('Georgia');
@@ -102,12 +102,18 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
+/* Column layout so main fills short pages and the footer sits at the bottom */
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background:
     radial-gradient(circle at 15% 20%, rgba(21, 94, 99, 0.2), transparent 40%),
     radial-gradient(circle at 80% 10%, rgba(198, 93, 46, 0.18), transparent 45%), var(--paper);
@@ -123,6 +129,29 @@ a {
 img {
   max-width: 100%;
   display: block;
+}
+
+/* Skip link: hidden until keyboard focus lands on it */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 200;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--teal);
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 /* Layout primitives */
@@ -200,6 +229,8 @@ img {
 
 .nav-toggle {
   display: none;
+  font: inherit;
+  color: inherit;
   border: 1px solid var(--line);
   background: #ffffff;
   border-radius: 10px;
@@ -343,13 +374,17 @@ h2 {
   flex-shrink: 0;
 }
 
-/* Accent panel */
+/* Accent panel. Dark ink, not white: white text on this gradient measures
+   as low as 1.7:1 contrast at the yellow end. Ink stays at 4.5:1 or better
+   across the whole gradient (WCAG AA). isolation + z-index: -1 keep the
+   decorative circle behind the text instead of washing over it. */
 .accent-card {
   padding: 1.6rem;
   background: linear-gradient(155deg, #f2c14e 0%, #c65d2e 100%);
-  color: #ffffff;
+  color: var(--ink);
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .accent-card::after {
@@ -361,6 +396,7 @@ h2 {
   position: absolute;
   bottom: -65px;
   right: -40px;
+  z-index: -1;
 }
 
 .accent-stat {
@@ -400,6 +436,10 @@ h2 {
 
 .card h3 {
   margin-bottom: 0.4rem;
+}
+
+.booking-notes {
+  align-self: start;
 }
 
 .step-list {
@@ -467,6 +507,7 @@ h2 {
 
 .footer-links {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.7rem;
   align-items: center;
 }
@@ -528,18 +569,42 @@ h2 {
   margin-top: 0.25rem;
 }
 
-/* Reveal animation utility */
-.reveal {
-  opacity: 0;
-  transform: translateY(22px);
-  transition:
-    opacity 550ms ease,
-    transform 550ms ease;
+/* Reveal animation utility. Sections only start hidden when a script can
+   reveal them and the visitor hasn't asked for reduced motion. With scripts
+   off, in print, or under reduced motion they simply render. */
+@media screen and (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 550ms ease,
+      transform 550ms ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+/* Reduced motion: no hover lifts on links and buttons */
+@media (prefers-reduced-motion: reduce) {
+  .nav-links a,
+  .btn,
+  .footer-links .social-link {
+    transition: none;
+  }
+
+  .nav-links a:hover,
+  .nav-links a:focus-visible,
+  .nav-links .primary:hover,
+  .nav-links .primary:focus-visible,
+  .btn:hover,
+  .btn:focus-visible,
+  .footer-links .social-link:hover,
+  .footer-links .social-link:focus-visible {
+    transform: none;
+  }
 }
 
 /* Responsive: tablet and down */
