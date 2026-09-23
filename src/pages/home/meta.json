@@ -1,13 +1,12 @@
 {
   "outputPath": "index.html",
   "meta": {
-    "title": "David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
-    "description": "Hands-on Software Engineer leading frontend architecture and contributing backend service code across payments, healthcare, consumer products, and enterprise platforms.",
-    "keywords": "Software Engineer, frontend architecture, backend systems, software engineering consultant, Vue.js developer, TypeScript engineer, legacy modernization",
+    "title": "David Dangerfield | Senior / Staff Frontend Engineer",
+    "description": "Senior / Staff Frontend Engineer with 20+ years of experience. Vue, React, and TypeScript, with backend depth. Available now, full-time or contract.",
     "canonical": "https://daviddangerfield.com/",
     "og": {
-      "title": "David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
-      "description": "20+ years across high-stakes software, from deep systems and legacy modernization to modern UI delivery with agentic AI tooling.",
+      "title": "David Dangerfield | Senior / Staff Frontend Engineer",
+      "description": "Frontend architecture, with backend depth, for payments, healthcare, and consumer products. Available now for senior or staff roles, full-time or contract.",
       "type": "website",
       "url": "https://daviddangerfield.com/",
       "siteName": "David Dangerfield",
@@ -16,35 +15,43 @@
         "type": "image/jpeg",
         "width": "1200",
         "height": "629",
-        "alt": "Social sharing card image for David Dangerfield."
+        "alt": "David Dangerfield presenting code from a laptop."
       }
     },
     "twitter": {
       "card": "summary_large_image",
-      "title": "David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
-      "description": "Hands-on engineering across payments, healthcare, consumer products, and enterprise software.",
+      "title": "David Dangerfield | Senior / Staff Frontend Engineer",
+      "description": "Frontend architecture, with backend depth, for payments, healthcare, and consumer products. Available now for senior or staff roles, full-time or contract.",
       "image": "https://daviddangerfield.com/images/social/social-share.jpg",
-      "imageAlt": "Social sharing card image for David Dangerfield."
+      "imageAlt": "David Dangerfield presenting code from a laptop."
     }
   },
   "schemaJson": {
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "David Dangerfield",
-    "jobTitle": "Software Engineer | Frontend Architecture | Backend Systems",
+    "jobTitle": "Senior / Staff Frontend Engineer",
     "url": "https://daviddangerfield.com",
     "telephone": "(612) 293-9138",
     "email": "contact@daviddangerfield.com",
     "sameAs": ["https://linkedin.com/in/dangerfield"],
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "1670 S Robert St #110",
-      "addressLocality": "West St. Paul",
+      "addressLocality": "Minneapolis",
       "addressRegion": "MN",
-      "postalCode": "55118",
       "addressCountry": "US"
     },
-    "alumniOf": ["Purdue University", "Brigham Young University"]
+    "alumniOf": ["Purdue University", "Brigham Young University"],
+    "knowsAbout": [
+      "Frontend architecture",
+      "Vue.js",
+      "React",
+      "TypeScript",
+      "Component libraries",
+      "Accessibility",
+      "Internationalization",
+      "Full-stack development"
+    ]
   },
   "footer": {
     "scheduleHref": "/contact/",

@@ -1,12 +1,12 @@
 {
   "outputPath": "about/index.html",
   "meta": {
-    "title": "About | Software Engineer | Frontend Architecture | Backend Systems | David Dangerfield",
-    "description": "About David Dangerfield: a hands-on Software Engineer with 20+ years from deep systems to modern UI, plus an MS in Computer Science from Purdue.",
+    "title": "About | David Dangerfield, Senior / Staff Frontend Engineer",
+    "description": "From IBM systems work to frontend architecture: David Dangerfield's background, how he works, and education.",
     "canonical": "https://daviddangerfield.com/about/",
     "og": {
-      "title": "About David Dangerfield | Software Engineer | Frontend Architecture | Backend Systems",
-      "description": "Delivering frontend architecture and backend engineering across payments, healthcare, consumer products, and enterprise software.",
+      "title": "About | David Dangerfield, Senior / Staff Frontend Engineer",
+      "description": "From IBM systems work in 2002 to frontend architecture for payments, healthcare, and consumer products.",
       "type": "profile",
       "url": "https://daviddangerfield.com/about/"
     }

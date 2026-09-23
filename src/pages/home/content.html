@@ -1,16 +1,17 @@
 <section class="hero">
-  <div class="container hero-grid">
+  <div class="container hero-grid home-hero">
     <article class="hero-card">
-      <p class="kicker">
-        Software Engineer | Frontend Architecture | Backend Systems | Consumer Products, Health,
-        Payments, CleanTech &amp; Enterprise Software | 20+ Years
-      </p>
+      <p class="kicker">Senior / Staff Frontend Engineer · Available now</p>
       <h1>David Dangerfield</h1>
       <p class="lead">
-        Software Engineer with a passion for the craft of
-        <strong>software that delights clients</strong>. I lead frontend architecture and contribute
-        backend service and API code, shipping features, upgrades, and fixes across large,
-        multi-repo systems.
+        I lead frontend architecture and stay hands-on in the code, backend included. Most recently,
+        at Patterson Companies, I rewrote a desktop-only AngularJS bill-pay frontend as a
+        responsive, localized Vue and TypeScript app. It serves dental and veterinary sites that
+        handle billions in payment revenue.
+      </p>
+      <p>
+        Based in Minneapolis and relocating to the Chicago area in spring 2027. Open to full-time or
+        contract roles: remote, hybrid, or local.
       </p>
       <div class="cta-row">
         <a
@@ -20,136 +21,144 @@
           rel="noreferrer"
           >Download Resume</a
         >
-        <a class="btn btn-secondary" href="/contact/">Schedule a Call</a>
+        <a class="btn btn-secondary" href="mailto:contact@daviddangerfield.com">Email Me</a>
       </div>
     </article>
-    <aside class="accent-card">
-      <h2>Trusted Expert</h2>
-      <p>
-        From operating system modules to polished UI components, my education (MS in CS, Purdue) and
-        decades of deep-system experience, are
-        <strong>now enhanced with modern agentic AI workflows to deliver rapid solutions</strong>
-        without sacrificing quality.
-      </p>
-      <div class="accent-stat">
-        <strong>Current focus</strong>
-        Independent consultant since 2021, partnering with select clients on frontend architecture
-        and backend engineering, and open to the right full-time opportunity.
-      </div>
-    </aside>
+    <figure class="hero-photo">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="
+            /images/headshots/david-headshot-2026-09-portrait-300.webp 300w,
+            /images/headshots/david-headshot-2026-09-portrait-400.webp 400w,
+            /images/headshots/david-headshot-2026-09-portrait-512.webp 512w,
+            /images/headshots/david-headshot-2026-09-portrait-640.webp 640w,
+            /images/headshots/david-headshot-2026-09-portrait-800.webp 800w
+          "
+          sizes="(max-width: 900px) 120px, 340px"
+        />
+        <img
+          src="/images/headshots/david-headshot-2026-09-portrait-400.jpg"
+          srcset="
+            /images/headshots/david-headshot-2026-09-portrait-300.jpg 300w,
+            /images/headshots/david-headshot-2026-09-portrait-400.jpg 400w,
+            /images/headshots/david-headshot-2026-09-portrait-512.jpg 512w,
+            /images/headshots/david-headshot-2026-09-portrait-640.jpg 640w,
+            /images/headshots/david-headshot-2026-09-portrait-800.jpg 800w
+          "
+          sizes="(max-width: 900px) 120px, 340px"
+          alt="Portrait of David Dangerfield"
+          width="400"
+          height="600"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </picture>
+    </figure>
   </div>
 </section>
 
 <section class="section alt">
   <div class="container reveal">
-    <h2>Core strengths</h2>
+    <h2>Recent work</h2>
     <p class="lead">
-      A hands-on engineer who enjoys modernizing legacy systems, removing technical debt, and
-      translating product, UX, and business needs into clean code and modern user experiences.
+      Three recent roles. The full 20+ years is in my
+      <a href="/Resume-David-Dangerfield.pdf" target="_blank" rel="noreferrer">resume</a>.
     </p>
     <div class="grid-3">
-      <article class="card">
-        <h3>Hands-On Frontend Architecture</h3>
+      <article class="card work-card">
+        <p class="card-meta">Patterson Companies · 2025 to 2026</p>
+        <h3>Bill pay, a partner portal, and the platform under them</h3>
         <p>
-          Shipping features, fixes, and upgrades across large systems with dozens of repos using
-          TypeScript, Vue.js, React, Next.js, and Node.js.
+          After the bill-pay rewrite, I led frontend architecture for a B2B partner portal and its
+          admin site, moving duplicated UI and routing into one shared repo with Storybook. I added
+          Vue 2 and Vue 3 support to shared company libraries so teams could upgrade on their own
+          schedule, and did platform work across services and CI pipelines, including an org-wide
+          Artifactory migration.
         </p>
+        <p class="card-stack">Vue, TypeScript, TanStack, Storybook, .NET/C#, Azure DevOps</p>
       </article>
-      <article class="card">
-        <h3>Legacy Modernization</h3>
+      <article class="card work-card">
+        <p class="card-meta">Life Time · 2022 to 2025</p>
+        <h3>Guest passes and member accounts</h3>
         <p>
-          Rewriting rigid legacy systems into maintainable codebases without disrupting the
-          revenue-critical, regulated, or customer-facing businesses that depend on them.
+          I led frontend development for the Account team and digitized the member guest pass
+          experience, supporting hundreds of thousands of new accounts and app installs. I also
+          added frontend error reporting in DataDog and built the Vue 3 location finder with a
+          custom Google Maps integration.
         </p>
+        <p class="card-stack">Vue 3, TypeScript, Vite, Vitest, Playwright, DataDog</p>
       </article>
-      <article class="card">
-        <h3>AI-Accelerated, Quality-Driven Delivery</h3>
+      <article class="card work-card">
+        <p class="card-meta">NextEra Analytics · 2021 to 2022</p>
+        <h3>Maps, charts, and dense data grids</h3>
         <p>
-          Using GitHub Copilot and Claude to move faster while keeping code quality, testing, and
-          user experience standards high.
+          I built UIs with geospatial maps, diagrams, and dense financial data grids, and introduced
+          Apache ECharts, which made interactive, animated charts practical to build in-house. I
+          also built an Angular iPad app, through web views, that streamlined scheduling for
+          wind-site workers.
         </p>
+        <p class="card-stack">TypeScript, Vue, GraphQL, ECharts, Angular, Storybook</p>
       </article>
     </div>
+    <p class="after-cards">
+      Also: FDA clinical trial authoring software at Nurocor (part-time, recognized by TransCelerate
+      BioPharma), Stripe payments in 10 currencies at SmugMug, D3.js visualizations for IBM Watson
+      for Drug Discovery, an FDA 510(k)-cleared cardiac monitoring platform at Preventice, and 11
+      years of systems and test engineering at IBM.
+    </p>
+    <p class="after-cards">
+      Day to day I work in Vue, React, and TypeScript, with backend depth in Node.js, Java, and C#
+      (<a href="/services/">full list</a>). I use GitHub Copilot and Claude every day, and this site
+      is built and maintained with them.
+    </p>
   </div>
 </section>
 
 <section class="section">
   <div class="container reveal">
-    <h2>Technical profile</h2>
-    <div class="grid-3">
-      <article class="card">
-        <h3>Languages</h3>
-        <p>TypeScript, JavaScript, Java, C#</p>
-      </article>
-      <article class="card">
-        <h3>Backend &amp; Frameworks</h3>
-        <p>
-          REST APIs, Node.js, Spring, Microservices, Message Queues, Legacy Modernization, Stripe
-        </p>
-      </article>
-      <article class="card">
-        <h3>Frontend</h3>
-        <p>
-          Vue.js, React, Next.js, Angular, GraphQL, Tailwind, Design Systems, Component Libraries,
-          A11y, I18n
-        </p>
-      </article>
-      <article class="card">
-        <h3>State Mgmt &amp; Data Stores</h3>
-        <p>TanStack, Pinia, Redux, SQL, PostgreSQL</p>
-      </article>
-      <article class="card">
-        <h3>Cloud &amp; Infrastructure</h3>
-        <p>AWS, Azure DevOps, GitHub Actions, DataDog</p>
-      </article>
-      <article class="card">
-        <h3>AI &amp; Testing Tools</h3>
-        <p>Copilot, Claude, Playwright, Cypress, Jest, JUnit, Vitest</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="section alt">
-  <div class="container reveal">
-    <h2>Industries</h2>
-    <div class="pill-list">
-      <span class="pill">Payments</span>
-      <span class="pill">FDA-Regulated Healthcare</span>
-      <span class="pill">Consumer Products &amp; Platforms</span>
-      <span class="pill">CleanTech &amp; Energy</span>
-      <span class="pill">Enterprise Software</span>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container reveal">
-    <h2>Career highlights</h2>
-    <div class="timeline">
-      <article class="timeline-item">
-        <strong>Patterson Companies:</strong> Led frontend architecture for a B2B client portal with
-        associated admin experience, and supported a multi-billion-dollar revenue stream by
-        rewriting the desktop-only Angular.js bill-pay frontend into a responsive, locale-aware
-        Vue.js/TypeScript/ TanStack experience.
-      </article>
-      <article class="timeline-item">
-        <strong>Life Time:</strong> Led frontend development for account and guest pass experiences,
-        supporting hundreds of thousands of new accounts and app installs.
-      </article>
-      <article class="timeline-item">
-        <strong>Nurocor:</strong> Delivered a structured FDA clinical trial authoring platform
-        recognized by the TransCelerate BioPharma ClinEco Protocol Review Challenge as "Best
-        Integrated Protocol Authoring and Review Solution."
-      </article>
-      <article class="timeline-item">
-        <strong>SmugMug &amp; IBM:</strong> Migrated legacy payments UI to Stripe across 10 global
-        currencies at SmugMug and earlier automated software packaging at IBM, eliminating 500+
-        person-hours annually.
-      </article>
-    </div>
+    <h2>What I'm looking for</h2>
+    <dl class="facts">
+      <div>
+        <dt>Role</dt>
+        <dd>Senior or staff, frontend or full-stack</dd>
+      </div>
+      <div>
+        <dt>Type</dt>
+        <dd>Full-time, or an hourly contract (corp-to-corp available)</dd>
+      </div>
+      <div>
+        <dt>Work</dt>
+        <dd>
+          Product UI, component libraries, and modernizing legacy apps, plus the APIs and services
+          behind them
+        </dd>
+      </div>
+      <div>
+        <dt>Background</dt>
+        <dd>
+          Payments, FDA-regulated healthcare, consumer products, cleantech, and enterprise software
+        </dd>
+      </div>
+      <div>
+        <dt>Where</dt>
+        <dd>Remote, hybrid, or local. Minneapolis now, the Chicago area from spring 2027</dd>
+      </div>
+      <div>
+        <dt>When</dt>
+        <dd>Available now</dd>
+      </div>
+    </dl>
     <div class="cta-row">
-      <a class="btn btn-primary" href="/contact/">Let's Talk Opportunities</a>
+      <a class="btn btn-primary" href="/contact/">Get in Touch</a>
+      <a
+        class="btn btn-secondary"
+        href="/Resume-David-Dangerfield.pdf"
+        target="_blank"
+        rel="noreferrer"
+        >Download Resume</a
+      >
     </div>
   </div>
 </section>

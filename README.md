@@ -17,6 +17,11 @@ in the repo names a hosting provider. Switching providers means adding a
 new folder named for that provider, pointing `HOST_CONFIG_FILES` in
 `scripts/lib/static-assets.mjs` at it instead, and removing `cloudflare/`.
 
+One exception lives outside that folder: `src/partials/layout.html` wraps the
+page body in `<!--email_off-->` comments, which stop the edge from rewriting
+email addresses into a script-decoded placeholder. They're inert on any other
+host.
+
 ## Daily Workflow
 
 1. Run `npm install` if dependencies are not installed.
