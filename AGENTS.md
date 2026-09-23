@@ -14,6 +14,10 @@ Issues and specs live as GitHub issues in this repo (ddanger/daviddangerfield-co
 
 Default five canonical labels, used as-is: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
 
+### Site copy
+
+Writing or editing any visitor-facing text (page content, meta tags, social cards): follow `docs/agents/voice.md`.
+
 ### Domain docs
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root (created lazily as needed). See `docs/agents/domain.md`.

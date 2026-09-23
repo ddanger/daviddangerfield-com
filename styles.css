@@ -254,11 +254,11 @@ main {
   align-items: center;
 }
 
-.about-hero-copy .lead {
+.about-hero-copy > :last-child {
   margin-bottom: 0;
 }
 
-.about-hero-photo {
+.hero-photo {
   margin: 0;
   justify-self: end;
   width: min(100%, 360px);
@@ -269,7 +269,7 @@ main {
   background: #f5efe3;
 }
 
-.about-hero-photo img {
+.hero-photo img {
   width: 100%;
   height: auto;
 }
@@ -291,6 +291,26 @@ main {
 
 .hero-card {
   padding: 2rem;
+}
+
+/* Home hero: the headshot matches the intro card's height. The image is
+   taken out of flow so the card alone sets the row height, then it fills
+   the figure and crops (object-fit) instead of stretching. */
+.home-hero {
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.7fr);
+}
+
+.home-hero .hero-photo {
+  position: relative;
+  width: min(100%, 340px);
+}
+
+.home-hero .hero-photo img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
 }
 
 /* Typography and shared content patterns */
@@ -438,6 +458,54 @@ h2 {
   margin-bottom: 0.4rem;
 }
 
+/* Work cards: employer and dates, outcome, then the stack pinned to the bottom */
+.work-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-meta {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.card-stack {
+  margin: auto 0 0;
+  padding-top: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.after-cards {
+  margin-top: 1.4rem;
+  max-width: 70ch;
+}
+
+/* Label and value pairs (what I'm looking for, contact details) */
+.facts {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1rem 0 0;
+  max-width: 70ch;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 1rem;
+}
+
+.facts dt {
+  font-weight: 700;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+
 .booking-notes {
   align-self: start;
 }
@@ -563,12 +631,6 @@ h2 {
   text-decoration: underline;
 }
 
-.footer-credit {
-  font-size: 0.85rem;
-  color: #666;
-  margin-top: 0.25rem;
-}
-
 /* Reveal animation utility. Sections only start hidden when a script can
    reveal them and the visitor hasn't asked for reduced motion. With scripts
    off, in print, or under reduced motion they simply render. */
@@ -619,13 +681,31 @@ h2 {
     gap: 1.2rem;
   }
 
-  .about-hero-photo {
+  .about-hero-grid .hero-photo {
     justify-self: center;
     width: min(78vw, 360px);
   }
 
+  /* On narrow screens the home headshot becomes a small round avatar above
+     the intro, so the name and pitch stay above the fold. */
+  .home-hero .hero-photo {
+    order: -1;
+    justify-self: start;
+    align-self: start;
+    width: 120px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+  }
+
   .hero {
     padding-top: 3.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .facts div {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
   }
 }
 
