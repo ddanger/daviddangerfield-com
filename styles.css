@@ -103,8 +103,8 @@
   --cream-500: #aea598;
   --night-600: #544d45;
   --night-700: #38332e;
-  --night-800: #2d2a26;
-  --night-850: #211e1b;
+  --night-800: #36312c;
+  --night-850: #292521;
   --night-900: #1c1a17;
   --night-950: #161412;
 
@@ -296,8 +296,6 @@ main {
 
 .section.alt {
   background: var(--color-bg-alt);
-  border-top: 1px solid var(--color-border-subtle);
-  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .grid-3 {
@@ -400,7 +398,6 @@ main {
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-border-subtle);
   padding: var(--space-6);
 }
 
@@ -410,7 +407,6 @@ main {
   width: min(100%, 360px);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
   background: var(--color-surface-muted);
 }
@@ -525,7 +521,7 @@ main {
 
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--radius-md);
   padding: var(--space-5);
 }
