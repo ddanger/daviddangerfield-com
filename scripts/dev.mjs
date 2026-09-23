@@ -46,10 +46,8 @@ async function fileExists(pathname) {
   }
 }
 
-// Minimal, local-only stand-in for the _redirects convention read from
-// dist/_redirects — exact-path matches only (the full convention also
-// supports splats/placeholders, which this repo doesn't use). Lets
-// `npm run dev` follow the same redirects the live site does.
+// Follows dist/_redirects like the live site, but exact paths only (no splats
+// or placeholders; this repo uses neither).
 async function loadRedirects() {
   const content = await readFile(join(DIST_DIR, '_redirects'), 'utf8').catch(() => '')
   return content
@@ -85,9 +83,6 @@ async function resolveRequestPath(requestUrl) {
   return null
 }
 
-// Calls build helpers in-process rather than shelling out to `npm run build` —
-// faster rebuild-on-save, and skips the prettier format pass (dev output is
-// transient, never committed, so unformatted is fine).
 async function runBuild(reason = 'initial') {
   if (buildRunning) {
     buildQueued = true
@@ -98,8 +93,8 @@ async function runBuild(reason = 'initial') {
   console.log(`\n[dev] Build started (${reason})`)
 
   try {
-    await bundleJs()
-    await buildSite()
+    await bundleJs({ minify: false })
+    await buildSite({ minify: false })
     console.log('[dev] Build finished')
   } catch (err) {
     console.log(`[dev] Build failed: ${err.message}`)

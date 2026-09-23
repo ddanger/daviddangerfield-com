@@ -1,9 +1,3 @@
-/**
- * BUILD-TIME ONLY — bundles src/client into a single script.js for the browser.
- *
- * Usage: node scripts/bundle-js.mjs — or import { bundleJs } from './bundle-js.mjs'
- */
-
 import * as esbuild from 'esbuild'
 import { mkdir, rm } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
@@ -13,12 +7,9 @@ const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
 const DIST_DIR = join(ROOT_DIR, 'dist')
 
-export async function bundleJs() {
-  // dist/ is the whole published site and is never committed. Wiped here
-  // because this always runs first — see
-  // package.json's `build` script and dev.mjs's runBuild() — so a file
-  // removed from src/pages or static-assets.mjs doesn't linger in a stale
-  // deploy, and build.mjs (which runs after) just adds to a clean dist/.
+export async function bundleJs({ minify = true } = {}) {
+  // Every build runs this first (package.json, dev.mjs), so it wipes dist/:
+  // files removed from src/ must not linger in a deploy.
   await rm(DIST_DIR, { recursive: true, force: true })
   await mkdir(DIST_DIR, { recursive: true })
   await esbuild.build({
@@ -27,10 +18,7 @@ export async function bundleJs() {
     outfile: join(DIST_DIR, 'script.js'),
     format: 'esm',
     target: ['es2020'],
-    minify: true,
-    banner: {
-      js: '/* GENERATED FILE — do not edit. Source: src/client/. Regenerate: npm run build:js */',
-    },
+    minify,
   })
   console.log('  ✓ dist/script.js')
 }

@@ -1,6 +1,8 @@
-/* Self-hosted fonts (latin subset) */
+/* Font descriptors name fonts and metrics, not design values, so the token
+   rule is off for this block. */
+/* stylelint-disable scale-unlimited/declaration-strict-value */
 @font-face {
-  font-family: 'Fraunces';
+  font-family: Fraunces;
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -32,25 +34,10 @@
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* LAYOUT SHIFT (CLS) FIX: metric-matched font fallbacks.
-   font-display: swap shows a fallback font immediately, then swaps to the
-   real webfont once it loads. If the fallback's glyph widths/line-height
-   don't match the webfont's, that swap reflows the page and shows up as
-   layout shift (CLS). These @font-face rules use font-metrics-override
-   (size-adjust/ascent-override/descent-override/line-gap-override) to make
-   the local system font, during that brief fallback period, occupy the
-   exact same box as the real webfont, so the later swap causes no visible
-   shift. Measured impact: CLS on / went from 0.0358 to 0.0012.
-   Values computed empirically: measured real rendered widths of actual
-   site text in the webfont, then swept size-adjust on the fallback
-   (Georgia Bold / Arial / Arial Bold, the real fallback faces these
-   stacks resolve to) to find the closest match, averaged across several
-   real strings per font/weight. (The OS/2.xAvgCharWidth-derived formula
-   alone was off by 15-20 points for these fonts. Don't recompute from
-   font-table metrics without calibrating against real rendered text.)
-   Referenced as a distinct family name ('Fraunces Fallback' / 'Space
-   Grotesk Fallback') inserted into the stack between the webfont and its
-   plain fallback. Never used directly in any rule. */
+/* Fallback faces metric-matched to the webfonts, so the font swap doesn't
+   shift layout (CLS on / went from 0.0358 to 0.0012). The values were
+   calibrated against real rendered text; formulas from font-table metrics
+   were off by 15 to 20 points. If a font changes, recalibrate the same way. */
 @font-face {
   font-family: 'Fraunces Fallback';
   src: local('Georgia Bold'), local('Georgia');
@@ -81,23 +68,93 @@
   line-gap-override: 0%;
 }
 
-/* Design tokens */
+/* stylelint-enable scale-unlimited/declaration-strict-value */
+
+/* Design tokens. Every color, spacing, font size, radius, shadow, and z-index
+   below comes from one (Stylelint enforces it). Raw values are allowed only
+   for geometry: photo sizes, SVG coordinates, 1px hairlines, 50%, 0.
+   Media queries can't read custom properties, so breakpoints are fixed:
+   600px stacks label/value pairs, 760px collapses the nav, 900px goes to one
+   column. */
 :root {
-  --sand: #f3efe7;
-  --ink: #111111;
-  --rust: #c65d2e;
-  --teal: #155e63;
-  --sun: #f2c14e;
+  /* Palette: the only place raw colors appear. */
+  --teal-700: #155e63;
+  --teal-100: #e3eeee;
+  --rust-600: #c65d2e;
+  --ink-900: #111;
+  --gray-800: #303030;
+  --gray-600: #4d4d4d;
+  --white: #fff;
   --paper: #fffaf2;
-  --muted: #4d4d4d;
-  --line: #d9d1c3;
-  --radius-lg: 22px;
+  --sand-100: #f9f4ea;
+  --sand-200: #f3efe7;
+  --sand-300: #eee5d5;
+  --sand-400: #e4dacb;
+  --sand-500: #d7ccb9;
+
+  /* Roles: components use these, never the palette, so a theme only
+     redefines roles. */
+  --color-bg: var(--paper);
+  --color-bg-alt: color-mix(in srgb, var(--sand-200) 62%, transparent);
+  --color-bg-header: color-mix(in srgb, var(--paper) 90%, transparent);
+  --color-glow-accent: color-mix(in srgb, var(--teal-700) 20%, transparent);
+  --color-glow-brand: color-mix(in srgb, var(--rust-600) 18%, transparent);
+  --color-surface: var(--white);
+  --color-surface-muted: var(--sand-100);
+  --color-surface-hover: var(--sand-300);
+  --color-text: var(--ink-900);
+  --color-text-soft: var(--gray-800);
+  --color-text-muted: var(--gray-600);
+  --color-border: var(--sand-500);
+  --color-border-subtle: var(--sand-400);
+  --color-accent: var(--teal-700);
+  --color-accent-subtle: var(--teal-100);
+  --color-on-accent: var(--white);
+  --color-brand: var(--rust-600);
+  --page-backdrop:
+    radial-gradient(circle at 15% 20%, var(--color-glow-accent), transparent 40%),
+    radial-gradient(circle at 80% 10%, var(--color-glow-brand), transparent 45%), var(--color-bg);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 5rem;
+  --font-body: 'Space Grotesk', 'Space Grotesk Fallback', 'Segoe UI', tahoma, sans-serif;
+  --font-display: 'Fraunces', 'Fraunces Fallback', georgia, serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: clamp(1.05rem, 1.9vw, 1.22rem);
+  --text-xl: 1.25rem;
+  --text-2xl: clamp(1.5rem, 3.2vw, 2.3rem);
+  --text-3xl: clamp(2.1rem, 5vw, 3.3rem);
+  --leading-tight: 1.15;
+  --leading-body: 1.55;
+  --tracking-slight: 0.02em;
+  --tracking-caps: 0.11em;
+  --radius-sm: 10px;
   --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 4px 14px color-mix(in srgb, var(--ink-900) 8%, transparent);
+  --shadow-accent: 0 6px 20px color-mix(in srgb, var(--teal-700) 20%, transparent);
+  --shadow-lg: 0 12px 40px color-mix(in srgb, var(--ink-900) 10%, transparent);
+  --duration-fast: 180ms;
+  --duration-slow: 550ms;
+  --ease: ease;
   --max-width: 1100px;
-  --shadow-soft: 0 12px 40px rgba(17, 17, 17, 0.1);
+  --measure: 70ch;
+  --gutter: var(--space-4);
+  --header-height: 4.5rem;
+  --z-header: 100;
+  --z-skip-link: 200;
 }
 
-/* Base reset and document defaults */
 * {
   box-sizing: border-box;
 }
@@ -114,12 +171,10 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(21, 94, 99, 0.2), transparent 40%),
-    radial-gradient(circle at 80% 10%, rgba(198, 93, 46, 0.18), transparent 45%), var(--paper);
-  color: var(--ink);
-  font-family: 'Space Grotesk', 'Space Grotesk Fallback', 'Segoe UI', Tahoma, sans-serif;
-  line-height: 1.55;
+  background: var(--page-backdrop);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: var(--leading-body);
 }
 
 a {
@@ -131,16 +186,42 @@ img {
   display: block;
 }
 
-/* Skip link: hidden until keyboard focus lands on it */
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  line-height: var(--leading-tight);
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-4);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+h3 {
+  font-size: var(--text-md);
+}
+
+main {
+  flex: 1 0 auto;
+}
+
 .skip-link {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 200;
-  padding: 0.6rem 1rem;
-  border-radius: 999px;
-  background: var(--teal);
-  color: #ffffff;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: var(--z-skip-link);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   font-weight: 700;
   text-decoration: none;
   transform: translateY(-200%);
@@ -150,112 +231,133 @@ img {
   transform: none;
 }
 
-main {
-  flex: 1 0 auto;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* Layout primitives */
 .container {
-  width: min(var(--max-width), calc(100% - 2rem));
+  width: min(var(--max-width), calc(100% - 2 * var(--gutter)));
   margin: 0 auto;
 }
 
-/* Header and navigation */
+.section {
+  padding: var(--space-8) 0;
+}
+
+.section.alt {
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-header);
   backdrop-filter: blur(8px);
-  background: rgba(255, 250, 242, 0.9);
-  border-bottom: 1px solid rgba(217, 209, 195, 0.65);
+  background: var(--color-bg-header);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .nav-wrap {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 72px;
+  min-height: var(--header-height);
 }
 
 .brand {
   text-decoration: none;
-  font-family: 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-md);
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--tracking-slight);
 }
 
 .brand span {
-  color: var(--rust);
+  color: var(--color-brand);
 }
 
 .nav-links {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   align-items: center;
 }
 
 .nav-links a {
   text-decoration: none;
-  padding: 0.45rem 0.8rem;
-  border-radius: 999px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
   transition:
-    background-color 180ms ease,
-    transform 180ms ease;
+    background-color var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease);
 }
 
 .nav-links a:hover,
 .nav-links a:focus-visible {
-  background: #eee5d5;
+  background: var(--color-surface-hover);
   transform: translateY(-1px);
 }
 
 .nav-links .primary {
-  background: var(--teal);
-  color: #ffffff;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    background-color 180ms ease;
+    transform var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease),
+    background-color var(--duration-fast) var(--ease);
 }
 
 .nav-links .primary:hover,
 .nav-links .primary:focus-visible {
-  background: var(--teal);
-  color: #ffffff;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(21, 94, 99, 0.2);
+  box-shadow: var(--shadow-accent);
 }
 
 .nav-toggle {
   display: none;
   font: inherit;
   color: inherit;
-  border: 1px solid var(--line);
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
   cursor: pointer;
 }
 
-/* Hero and page-specific intros */
 .hero {
-  padding: 4.5rem 0 3rem;
+  padding: var(--space-8) 0 var(--space-7);
 }
 
-.about-hero {
-  padding-bottom: 3.6rem;
-}
-
-.about-hero-grid {
+.hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.75fr);
-  gap: 1.5rem 2rem;
-  align-items: center;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: var(--space-6);
+  align-items: stretch;
 }
 
-.about-hero-copy > :last-child {
-  margin-bottom: 0;
+.hero-card {
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-subtle);
+  padding: var(--space-6);
 }
 
 .hero-photo {
@@ -264,9 +366,9 @@ main {
   width: min(100%, 360px);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(217, 209, 195, 0.9);
-  box-shadow: var(--shadow-soft);
-  background: #f5efe3;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-surface-muted);
 }
 
 .hero-photo img {
@@ -274,28 +376,8 @@ main {
   height: auto;
 }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 1.8rem;
-  align-items: stretch;
-}
-
-.hero-card,
-.accent-card {
-  border-radius: var(--radius-lg);
-  background: #ffffff;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(217, 209, 195, 0.8);
-}
-
-.hero-card {
-  padding: 2rem;
-}
-
-/* Home hero: the headshot matches the intro card's height. The image is
-   taken out of flow so the card alone sets the row height, then it fills
-   the figure and crops (object-fit) instead of stretching. */
+/* The headshot is taken out of flow so the intro card alone sets the row
+   height; the photo then fills and crops to match it. */
 .home-hero {
   grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.7fr);
 }
@@ -313,183 +395,37 @@ main {
   object-position: 50% 20%;
 }
 
-/* Typography and shared content patterns */
+.about-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.75fr);
+  gap: var(--space-5) var(--space-6);
+  align-items: center;
+}
+
+.about-hero-copy > :last-child {
+  margin-bottom: 0;
+}
+
 .kicker {
   text-transform: uppercase;
-  font-size: 0.78rem;
-  letter-spacing: 0.11em;
-  color: var(--teal);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-caps);
+  color: var(--color-accent);
   font-weight: 700;
-}
-
-h1,
-h2,
-h3 {
-  margin-top: 0;
-  line-height: 1.15;
-}
-
-h1 {
-  font-family: 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-  font-size: clamp(2.1rem, 5vw, 3.3rem);
-  margin-bottom: 1rem;
-}
-
-h2 {
-  font-family: 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-  font-size: clamp(1.5rem, 3.2vw, 2.3rem);
-  margin-bottom: 0.7rem;
 }
 
 .lead {
-  font-size: clamp(1.05rem, 1.9vw, 1.22rem);
-  color: #303030;
-  max-width: 58ch;
+  font-size: var(--text-lg);
+  color: var(--color-text-soft);
+  max-width: var(--measure);
 }
 
-.cta-row {
-  margin-top: 1.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-}
-
-/* Buttons and interactive controls */
-.btn {
-  text-decoration: none;
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 0.8rem 1.1rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.btn:hover,
-.btn:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(21, 94, 99, 0.2);
-}
-
-.btn-primary {
-  background: var(--teal);
-  color: #ffffff;
-}
-
-.btn-secondary {
-  background: #f9f4ea;
-  color: var(--ink);
-  border-color: #ddd2c1;
-}
-
-.btn-icon {
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.45rem;
-  fill: currentColor;
-  flex-shrink: 0;
-}
-
-/* Accent panel. Dark ink, not white: white text on this gradient measures
-   as low as 1.7:1 contrast at the yellow end. Ink stays at 4.5:1 or better
-   across the whole gradient (WCAG AA). isolation + z-index: -1 keep the
-   decorative circle behind the text instead of washing over it. */
-.accent-card {
-  padding: 1.6rem;
-  background: linear-gradient(155deg, #f2c14e 0%, #c65d2e 100%);
-  color: var(--ink);
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.accent-card::after {
-  content: '';
-  width: 190px;
-  height: 190px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  position: absolute;
-  bottom: -65px;
-  right: -40px;
-  z-index: -1;
-}
-
-.accent-stat {
-  margin-top: 2.2rem;
-  font-size: 0.95rem;
-}
-
-.accent-stat strong {
-  display: block;
-  font-size: 2rem;
-  line-height: 1;
-}
-
-/* Sections and content modules */
-.section {
-  padding: 4.4rem 0;
-}
-
-.section.alt {
-  background: rgba(243, 239, 231, 0.62);
-  border-top: 1px solid #e4dacb;
-  border-bottom: 1px solid #e4dacb;
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.card {
-  background: #ffffff;
-  border: 1px solid #ded5c8;
-  border-radius: var(--radius-md);
-  padding: 1.2rem;
-}
-
-.card h3 {
-  margin-bottom: 0.4rem;
-}
-
-/* Work cards: employer and dates, outcome, then the stack pinned to the bottom */
-.work-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-meta {
-  margin: 0 0 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--teal);
-}
-
-.card-stack {
-  margin: auto 0 0;
-  padding-top: 0.6rem;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-.after-cards {
-  margin-top: 1.4rem;
-  max-width: 70ch;
-}
-
-/* Long-form pages (case studies, how this site is built) */
 .prose {
-  max-width: 72ch;
+  max-width: var(--measure);
 }
 
 .prose h2 {
-  margin-top: 2.6rem;
+  margin-top: var(--space-7);
 }
 
 .prose h2:first-child {
@@ -497,24 +433,131 @@ h2 {
 }
 
 .prose h3 {
-  margin: 2rem 0 0.5rem;
-  font-size: 1.2rem;
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--text-xl);
 }
 
 .prose li + li {
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
+}
+
+.cta-row {
+  margin-top: var(--space-5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.btn {
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  transition:
+    transform var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-accent);
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.btn-secondary {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+
+.card h3 {
+  margin-bottom: var(--space-2);
+}
+
+.work-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-meta {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.card-stack {
+  margin: auto 0 0;
+  padding-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
 .card-link {
-  margin: 0.8rem 0 0;
+  margin: var(--space-3) 0 0;
   font-weight: 700;
 }
 
-/* Inline SVG diagrams. Narrow viewBoxes (560 units) and large text keep
-   labels legible at phone width; max-width keeps them near body-text size
-   on desktop. */
+.after-cards {
+  margin-top: var(--space-5);
+  max-width: var(--measure);
+}
+
+.booking-notes {
+  align-self: start;
+}
+
+.facts {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+  max-width: var(--measure);
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: var(--space-4);
+}
+
+.facts dt {
+  font-weight: 700;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.timeline {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.timeline-item {
+  border-left: 3px solid var(--color-accent);
+  padding: var(--space-1) 0 var(--space-1) var(--space-4);
+}
+
+/* Diagrams: a narrow viewBox (560 units) keeps SVG text legible on phones;
+   max-width keeps it near body-text size on desktop. */
 .diagram {
-  margin: 1.6rem 0;
+  margin: var(--space-5) 0;
 }
 
 .diagram svg {
@@ -526,128 +569,59 @@ h2 {
 }
 
 .d-box {
-  fill: #ffffff;
-  stroke: #cfc5b4;
+  fill: var(--color-surface);
+  stroke: var(--color-border);
   stroke-width: 1.5;
 }
 
 .d-accent {
-  fill: #e3eeee;
-  stroke: var(--teal);
+  fill: var(--color-accent-subtle);
+  stroke: var(--color-accent);
   stroke-width: 1.5;
 }
 
+.d-arrow {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2;
+}
+
+/* SVG text sizes are viewBox units (geometry), not type-scale values. */
 .d-label {
-  fill: var(--ink);
+  fill: var(--color-text);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
   font-size: 19px;
   font-weight: 700;
 }
 
 .d-muted {
-  fill: var(--muted);
+  fill: var(--color-text-muted);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
   font-size: 17px;
 }
 
-.d-arrow {
-  fill: none;
-  stroke: var(--teal);
-  stroke-width: 2;
-}
-
-/* Label and value pairs (what I'm looking for, contact details) */
-.facts {
-  display: grid;
-  gap: 0.7rem;
-  margin: 1rem 0 0;
-  max-width: 70ch;
-}
-
-.facts div {
-  display: grid;
-  grid-template-columns: 6.5rem 1fr;
-  gap: 1rem;
-}
-
-.facts dt {
-  font-weight: 700;
-}
-
-.facts dd {
-  margin: 0;
-}
-
-
-.booking-notes {
-  align-self: start;
-}
-
-.step-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.step-list li {
-  background: #fff;
-  border: 1px solid #ddd3c4;
-  border-radius: 12px;
-  padding: 0.9rem 1rem;
-}
-
-.step-list .num {
-  font-weight: 700;
-  color: var(--rust);
-  margin-right: 0.35rem;
-}
-
-.timeline {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.timeline-item {
-  border-left: 3px solid var(--teal);
-  padding: 0.3rem 0 0.3rem 0.9rem;
-}
-
-.timeline-item strong {
-  font-weight: 700;
-}
-
-.pill-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.pill {
-  border: 1px solid #d7ccb9;
-  background: #f9f3e8;
-  border-radius: 999px;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.9rem;
-}
-
-/* Footer */
 .site-footer {
-  border-top: 1px solid #ddd2c3;
-  padding: 2rem 0;
-  background: #fffaf2;
+  border-top: 1px solid var(--color-border-subtle);
+  padding: var(--space-6) 0;
+  background: var(--color-bg);
 }
 
 .footer-wrap {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
   flex-wrap: wrap;
+}
+
+.footer-note {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
 }
 
 .footer-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
+  gap: var(--space-3);
   align-items: center;
 }
 
@@ -656,67 +630,49 @@ h2 {
   font-weight: 700;
 }
 
-.footer-links .social-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 999px;
-  border: 1px solid #d7ccb9;
-  background: #f9f3e8;
-  transition:
-    background-color 180ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.footer-links .social-link:hover,
-.footer-links .social-link:focus-visible {
-  text-decoration: none;
-  background: #efe4d0;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(17, 17, 17, 0.08);
-}
-
-.social-icon {
-  width: 1.15rem;
-  height: 1.15rem;
-  fill: currentColor;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.footer-note {
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
-}
-
 .footer-links a:hover,
 .footer-links a:focus-visible {
   text-decoration: underline;
 }
 
-/* Reveal animation utility. Sections only start hidden when a script can
-   reveal them and the visitor hasn't asked for reduced motion. With scripts
-   off, in print, or under reduced motion they simply render. */
+.footer-links .social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
+}
+
+.footer-links .social-link:hover,
+.footer-links .social-link:focus-visible {
+  text-decoration: none;
+  background: var(--color-surface-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.social-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: currentcolor;
+}
+
+/* Sections start hidden only when a script can reveal them and motion is
+   allowed. With scripts off, in print, or under reduced motion they render. */
 @media screen and (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .reveal {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(var(--space-5));
     transition:
-      opacity 550ms ease,
-      transform 550ms ease;
+      opacity var(--duration-slow) var(--ease),
+      transform var(--duration-slow) var(--ease);
   }
 
   .reveal.visible {
@@ -725,7 +681,6 @@ h2 {
   }
 }
 
-/* Reduced motion: no hover lifts on links and buttons */
 @media (prefers-reduced-motion: reduce) {
   .nav-links a,
   .btn,
@@ -745,16 +700,19 @@ h2 {
   }
 }
 
-/* Responsive: tablet and down */
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .hero-grid,
   .grid-3 {
     grid-template-columns: 1fr;
   }
 
+  .hero {
+    padding-top: var(--space-7);
+  }
+
   .about-hero-grid {
     grid-template-columns: 1fr;
-    gap: 1.2rem;
+    gap: var(--space-4);
   }
 
   .about-hero-grid .hero-photo {
@@ -762,43 +720,29 @@ h2 {
     width: min(78vw, 360px);
   }
 
-  /* On narrow screens the home headshot becomes a small round avatar above
-     the intro, so the name and pitch stay above the fold. */
+  /* A small avatar keeps the name and pitch above the fold on phones. */
   .home-hero .hero-photo {
     order: -1;
-    justify-self: start;
-    align-self: start;
+    place-self: start start;
     width: 120px;
     aspect-ratio: 1;
     border-radius: 50%;
   }
-
-  .hero {
-    padding-top: 3.4rem;
-  }
 }
 
-@media (max-width: 600px) {
-  .facts div {
-    grid-template-columns: 1fr;
-    gap: 0.1rem;
-  }
-}
-
-/* Responsive: mobile nav */
-@media (max-width: 760px) {
+@media (width <= 760px) {
   .nav-toggle {
     display: inline-flex;
   }
 
   .nav-links {
     position: absolute;
-    right: 1rem;
-    top: 64px;
-    background: #fffaf2;
-    border: 1px solid #ddd2c1;
-    border-radius: 12px;
-    padding: 0.7rem;
+    right: var(--gutter);
+    top: calc(var(--header-height) - var(--space-2));
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
     min-width: 220px;
     display: none;
     flex-direction: column;
@@ -807,5 +751,12 @@ h2 {
 
   .nav-links.open {
     display: flex;
+  }
+}
+
+@media (width <= 600px) {
+  .facts div {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
   }
 }

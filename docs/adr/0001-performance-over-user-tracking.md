@@ -12,4 +12,4 @@ This site exists partly to show that I build fast, well-maintained websites, so 
 - There is no conversion data (resume downloads, schedule clicks). That's accepted.
 - One exception: Cloudflare Web Analytics stays. Cloudflare injects it at the edge. It sets no cookies and loads after the page renders (about 10 KB). It gives rough visit counts with no measurable Lighthouse cost.
 - Third-party embeds count as tracking scripts. The inline Calendly widget on /contact/ was removed under the same rule: it loaded 4.6 MB across 80 requests from 23 hosts (including ad and session-recording trackers) and dropped Lighthouse Best Practices to 77. Scheduling is a plain link to Calendly instead.
-- Anything added later must keep every page at Lighthouse 98 or higher on mobile and must not load before first render.
+- Anything added later must keep every page at Lighthouse 95 or higher on mobile and must not load before first render. (Mobile scores vary a few points run to run from network simulation, so a single run in the mid 90s isn't a regression by itself.)

@@ -1,20 +1,5 @@
-/**
- * Generate a social-share image from a resume screenshot or PDF using the v7 style:
- * - abstracted/blurred background (non-legible)
- * - dark top banner
- * - clear CTA text
- *
- * Usage:
- *   node scripts/generate-resume-share.mjs --input Resume-David-Dangerfield.pdf
- *   node scripts/generate-resume-share.mjs --input images/social/resume-share-source.png
- *
- * Optional:
- *   --output images/social/resume-share.png
- *   --title "Download Resume"
- *   --subtitle "Latest PDF"
- *   --font-bold "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
- *   --font-regular "/System/Library/Fonts/Supplemental/Arial.ttf"
- */
+// Generates the /resume/ link-preview image from the resume PDF. Run it through
+// `npm run update:resume`, which also bumps the resume version.
 
 import { access, mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { constants } from 'node:fs'

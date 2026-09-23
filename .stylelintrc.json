@@ -1,0 +1,42 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "plugins": ["stylelint-declaration-strict-value"],
+  "rules": {
+    "scale-unlimited/declaration-strict-value": [
+      [
+        "/color$/",
+        "background",
+        "fill",
+        "stroke",
+        "font-size",
+        "font-family",
+        "line-height",
+        "letter-spacing",
+        "/^margin/",
+        "/^padding/",
+        "gap",
+        "row-gap",
+        "column-gap",
+        "border-radius",
+        "box-shadow",
+        "z-index"
+      ],
+      {
+        "ignoreValues": [
+          "0",
+          "auto",
+          "inherit",
+          "none",
+          "transparent",
+          "currentcolor",
+          "1",
+          "50%",
+          "-1px"
+        ],
+        "expandShorthand": true,
+        "message": "Use a design token (var(--...)) from :root in styles.css instead of a raw value."
+      }
+    ],
+    "no-descending-specificity": null
+  }
+}

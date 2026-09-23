@@ -13,14 +13,19 @@
     "validate:source": "node scripts/validate-source.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "check:uptime": "node scripts/uptime-check.mjs",
-    "format": "prettier --write \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\"",
-    "format:check": "prettier --check \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\"",
+    "format": "prettier --write \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" styles.css",
+    "format:check": "prettier --check \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" styles.css",
     "build": "npm run build:js && npm run build:html && npm run format",
-    "test": "node --test scripts/lib/*.test.mjs"
+    "test": "node --test scripts/lib/*.test.mjs",
+    "lint:css": "stylelint styles.css"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
-    "prettier": "^3.3.3"
+    "html-minifier-terser": "^7.2.0",
+    "prettier": "^3.3.3",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-declaration-strict-value": "^1.12.1"
   },
   "engines": {
     "node": ">=24"

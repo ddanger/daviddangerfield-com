@@ -1,9 +1,7 @@
 #!/usr/bin/env sh
-# BUILD-TIME: pre-commit hook — smoke-tests that the build still succeeds.
-# dist/ isn't committed, so this doesn't produce anything to add to the
-# commit; formatting is checked separately by CI (build-and-format.yml).
-# Installed automatically when you run: npm install
+# Fails the commit if the build or CSS lint breaks. Formatting is checked in CI.
 set -e
 
 npm run build:js
 npm run build:html
+npm run lint:css
