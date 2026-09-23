@@ -1,0 +1,19 @@
+{
+  "outputPath": "work/patterson/index.html",
+  "meta": {
+    "title": "Case Study: Bill Pay and a Partner Portal at Patterson Companies | David Dangerfield",
+    "description": "Rebuilding a revenue-critical bill-pay frontend in Vue and TypeScript, then leading frontend architecture for a B2B partner portal.",
+    "canonical": "https://daviddangerfield.com/work/patterson/",
+    "og": {
+      "title": "Case Study: Bill Pay and a Partner Portal at Patterson Companies",
+      "description": "Rebuilding a revenue-critical bill-pay frontend in Vue and TypeScript, then leading frontend architecture for a B2B partner portal.",
+      "type": "article",
+      "url": "https://daviddangerfield.com/work/patterson/"
+    }
+  },
+  "footer": {
+    "scheduleHref": "/contact/",
+    "scheduleTarget": null,
+    "scheduleRel": null
+  }
+}

@@ -1,6 +1,16 @@
 # daviddangerfield-com
 
-Static personal website.
+Source for [daviddangerfield.com](https://daviddangerfield.com), the personal site of David Dangerfield, a senior / staff frontend engineer.
+
+The site doubles as a work sample:
+
+- **Static HTML, no framework.** Small Node scripts in `scripts/` assemble pages from `src/` at build time. CSS is inlined, and the only JavaScript is one small module that pages don't need to render.
+- **Fast.** Lighthouse mobile performance of 96 to 100 with zero layout shift, and 100 for accessibility, best practices, and SEO. Self-hosted fonts use metric-matched fallbacks (see `styles.css`).
+- **No tracking.** No analytics or third-party scripts; see [docs/adr/0001](docs/adr/0001-performance-over-user-tracking.md).
+- **Checked on every change.** GitHub Actions build, format-check, test, and validate every page, and an hourly job checks that the site is up.
+- **Built with AI agents.** Instructions for them live in [AGENTS.md](AGENTS.md), including a [voice guide](docs/agents/voice.md) for site copy.
+
+More in [How this site is built](https://daviddangerfield.com/how-this-site-is-built/).
 
 ## The Important Rule
 

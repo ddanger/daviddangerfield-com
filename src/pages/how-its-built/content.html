@@ -1,0 +1,89 @@
+<section class="section hero">
+  <div class="container prose">
+    <p class="kicker">Behind the site</p>
+    <h1>How this site is built</h1>
+    <p class="lead">
+      This site doubles as a work sample. The source is
+      <a href="https://github.com/ddanger/daviddangerfield-com" target="_blank" rel="noopener"
+        >public on GitHub</a
+      >, so you can check everything below.
+    </p>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container prose">
+    <h2>Fast by default</h2>
+    <ul>
+      <li>
+        Every page is static HTML. There's no framework: a few small Node scripts assemble the pages
+        from shared partials at build time, and the CSS is inlined into each page so nothing blocks
+        the first render.
+      </li>
+      <li>
+        The only JavaScript is one small module (under 1.5 KB) for the mobile menu and the scroll
+        reveals. Every page works without it.
+      </li>
+      <li>
+        Fonts are self-hosted, trimmed to the Latin character set, and preloaded. The fallback fonts
+        are metric-matched, so when the real fonts arrive nothing on the page moves.
+      </li>
+      <li>Photos are served as WebP with JPEG fallbacks, in several sizes.</li>
+    </ul>
+    <p>
+      On Lighthouse's mobile test, which simulates a mid-range phone on a slow connection, pages
+      score 96 to 100 for performance (it varies a little run to run) with zero layout shift, and
+      100 for accessibility, best practices, and SEO. Each page is 87 to 133 KB in total, fonts and
+      photos included.
+    </p>
+
+    <h2>No tracking</h2>
+    <p>
+      I removed Google Analytics and every other third-party script, including an embedded
+      scheduling widget that pulled in 4.6 MB from 23 other domains. The reasoning is recorded as a
+      decision record in the repo. The only measurement left is Cloudflare's cookieless visit count.
+    </p>
+
+    <h2>Accessible</h2>
+    <p>
+      A skip link and full keyboard support, text contrast that meets WCAG AA, reduced-motion
+      support, and content that renders with JavaScript turned off. Every page passes axe with no
+      violations.
+    </p>
+
+    <h2>Maintained like production code</h2>
+    <ul>
+      <li>
+        Hosted on Cloudflare Pages. Cache headers, security headers, and redirects live in the repo
+        as config files, not in a dashboard.
+      </li>
+      <li>
+        GitHub Actions build every pull request, check formatting, run unit tests, and validate
+        every page: metadata, canonical URLs, internal links, and one check that rejects em dashes.
+      </li>
+      <li>
+        The sitemap regenerates itself when pages change, and an hourly job checks that every page
+        is up.
+      </li>
+      <li>Decisions a future reader might question are written down as short decision records.</li>
+    </ul>
+
+    <h2>Built with AI, reviewed by me</h2>
+    <p>
+      I build and maintain this site with AI coding agents, mostly Claude Code, plus GitHub Copilot.
+      They follow instructions that live in the repo, including a voice guide so the copy sounds
+      like me. Every change goes through a pull request that I review and merge myself.
+    </p>
+
+    <div class="cta-row">
+      <a
+        class="btn btn-primary"
+        href="https://github.com/ddanger/daviddangerfield-com"
+        target="_blank"
+        rel="noopener"
+        >Browse the Source</a
+      >
+      <a class="btn btn-secondary" href="/work/patterson/">Read a Case Study</a>
+    </div>
+  </div>
+</section>
