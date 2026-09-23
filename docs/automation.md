@@ -51,6 +51,7 @@ Behavior:
 
 - Runs `node scripts/validate-source.mjs`
 - Validates source contracts, canonical consistency, and source-level links
+- Rejects em dashes (literal or `&mdash;`) in site copy under `src/pages`, `src/partials`, and `src/site.json`
 - Fails PR with source-file-level error output
 
 ### 3) Sitemap Auto

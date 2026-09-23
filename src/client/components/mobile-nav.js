@@ -8,6 +8,12 @@ export function initMobileNav() {
     return
   }
 
+  function closeNav() {
+    navLinks.classList.remove('open')
+    navToggle.setAttribute('aria-expanded', 'false')
+    setNavOpen(false)
+  }
+
   navToggle.addEventListener('click', () => {
     const isOpen = navLinks.classList.toggle('open')
     navToggle.setAttribute('aria-expanded', String(isOpen))
@@ -15,10 +21,13 @@ export function initMobileNav() {
   })
 
   navLinks.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open')
-      navToggle.setAttribute('aria-expanded', 'false')
-      setNavOpen(false)
-    })
+    link.addEventListener('click', closeNav)
+  })
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && navLinks.classList.contains('open')) {
+      closeNav()
+      navToggle.focus()
+    }
   })
 }

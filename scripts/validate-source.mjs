@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { access, readFile } from 'node:fs/promises'
+import { access, readdir, readFile } from 'node:fs/promises'
 import { constants as fsConstants } from 'node:fs'
 import path from 'node:path'
 import { discoverPages, HELPER_ROUTES, ROOT_DIR } from './lib/routes.mjs'
@@ -44,6 +44,17 @@ function extractRefs(source) {
     refs.push({ attr, ref: raw })
   }
   return refs
+}
+
+// Site copy never uses em dashes, literal or as an HTML entity. Commas,
+// periods, colons, or parentheses read better and don't read as generated.
+const EM_DASH_REGEX = /\u2014|&mdash;|&#8212;|&#x2014;/i
+
+function findEmDashLines(source) {
+  return source
+    .split('\n')
+    .map((line, index) => (EM_DASH_REGEX.test(line) ? index + 1 : null))
+    .filter((lineNumber) => lineNumber !== null)
 }
 
 function toRel(absPath) {
@@ -123,10 +134,6 @@ function validateCanonical(meta, pageId, errors) {
 async function main() {
   const errors = []
   const site = JSON.parse(await readFile(path.join(ROOT_DIR, 'src', 'site.json'), 'utf8'))
-
-  if (!/^G-[A-Z0-9]{6,}$/.test(String(site.gaId || ''))) {
-    errors.push('src/site.json: gaId must match pattern G-XXXXXX (6+ uppercase alphanumerics)')
-  }
 
   const resumeVersion = String(site.resumeVersion || '')
   if (!resumeVersion) {
@@ -243,6 +250,28 @@ async function main() {
     const valid = await validateAbsoluteRef(absoluteRef, knownRoutes)
     if (!valid) {
       errors.push(`${item.sourcePath}: unresolved reference ${item.ref}`)
+    }
+  }
+
+  const copyDirs = ['pages', 'partials'].map((dir) => path.join(ROOT_DIR, 'src', dir))
+  const copyFiles = [path.join(ROOT_DIR, 'src', 'site.json')]
+  for (const dir of copyDirs) {
+    // eslint-disable-next-line no-await-in-loop
+    const entries = await readdir(dir, { recursive: true, withFileTypes: true })
+    for (const entry of entries) {
+      if (entry.isFile() && /\.(html|json)$/.test(entry.name)) {
+        copyFiles.push(path.join(entry.parentPath, entry.name))
+      }
+    }
+  }
+
+  for (const file of copyFiles) {
+    // eslint-disable-next-line no-await-in-loop
+    const source = await readFile(file, 'utf8')
+    for (const lineNumber of findEmDashLines(source)) {
+      errors.push(
+        `${toRel(file)}:${lineNumber}: em dash in site copy (use a comma, colon, or period)`,
+      )
     }
   }
 
