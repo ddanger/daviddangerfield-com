@@ -30,7 +30,7 @@ Site copy should sound like David wrote it and promise only what he can back up 
 - **Frontend first, full-stack welcome:** frontend is the headline, and he's also open to full-stack roles. His backend work is real experience (most recently .NET/C# at Patterson), not a footnote.
 - **Featured roles:** when only three fit, feature Patterson Companies, Life Time, and NextEra Analytics. Nurocor was a part-time side role; mention it in supporting lists.
 - **Volume metrics:** describe what the work did rather than counting it. Skip PR and repo counts, and any other volume number that could read as too high or too low; the resume's "20+ repositories" is the one exception.
-- **Availability and location:** available now for senior or staff roles, frontend or full-stack, full-time or contract. Based in Minneapolis, relocating to the Chicago area in spring 2027. Open to remote, hybrid, and local roles.
+- **Availability and location:** available now for senior or staff roles, frontend or full-stack, full-time or contract. Based in Minneapolis. Open to remote, hybrid, and on-site roles.
 - **Engagement type:** full-time, or an hourly contract. For contracts he bills through his LLC, so say "corp-to-corp available". Say "contract", not "consulting". The LLC's name and address stay off the site.
 - **AI tools:** mention at most once per page, concretely (GitHub Copilot and Claude in his daily work; this site is built and maintained with them).
 - **"20+ years":** at most once per page.
