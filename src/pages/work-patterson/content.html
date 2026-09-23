@@ -1,0 +1,209 @@
+<section class="section hero">
+  <div class="container prose">
+    <p class="kicker">Case study · Patterson Companies · 2025 to 2026</p>
+    <h1>Rebuilding bill pay, then untangling a partner portal</h1>
+    <p class="lead">
+      Patterson's dental and veterinary sites handle billions in payment revenue. Their bill-pay
+      section was AngularJS code written six to eight years earlier, desktop-only and not
+      responsive. I joined a small team to rebuild it, then moved on to lead frontend architecture
+      for a new B2B partner portal.
+    </p>
+    <dl class="facts">
+      <div>
+        <dt>Role</dt>
+        <dd>Principal Software Engineer (contractor)</dd>
+      </div>
+      <div>
+        <dt>Team</dt>
+        <dd>
+          For bill pay, me, a senior frontend developer with a decade of tenure at the company who
+          mentored me, and a junior developer
+        </dd>
+      </div>
+      <div>
+        <dt>Stack</dt>
+        <dd>Vue, TypeScript, TanStack, Storybook, .NET/C#, Azure DevOps</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container prose">
+    <h2>The bill-pay rewrite</h2>
+    <p>
+      We rebuilt it in Vue with the Composition API. The company's shared component library was
+      still on Vue 2, so we used the latest Vue 2, whose syntax is close to Vue 3, to keep the
+      eventual upgrade easy. We built every component in Storybook, made them responsive, and kept
+      all text out of the code so the UI follows the user's selected locale.
+    </p>
+    <p>
+      Card numbers never touched our code: a front-end tokenizer from the payments vendor gave us a
+      token instead. The project grew to include payment history, canceling a pending payment, and a
+      solid layer of unit tests.
+    </p>
+
+    <h3>Two sticky elements that didn't share a parent</h3>
+    <p>
+      On the pay-by-invoice page, the designer wanted the selected-payments summary and the invoice
+      table header to stay in view no matter how far you scrolled. The two were cousins in the DOM:
+      same grandparent, different parents. I said in the design review I wasn't sure it was
+      practical, was told it was worth trying, and found an approach that worked in Storybook.
+    </p>
+    <p>
+      It broke on the real page, where the surrounding markup changed the offsets it depended on.
+      The fix was a ResizeObserver that measures the sticky headers as they change size, so each
+      one's position stays correct no matter what's around it.
+    </p>
+    <figure class="diagram">
+      <svg
+        viewBox="0 0 560 300"
+        role="img"
+        aria-labelledby="sticky-title sticky-desc"
+        focusable="false"
+      >
+        <title id="sticky-title">Two sticky elements with different parents</title>
+        <desc id="sticky-desc">
+          A shared grandparent contains two parents. One holds the payment summary, the other the
+          invoice table header. A ResizeObserver measures both sticky elements and sets their
+          offsets.
+        </desc>
+        <rect class="d-box" x="10" y="10" width="330" height="280" rx="12" />
+        <text class="d-label" x="26" y="40">Shared grandparent</text>
+        <rect class="d-box" x="30" y="56" width="290" height="92" rx="10" />
+        <text class="d-muted" x="46" y="80">Parent A</text>
+        <rect class="d-accent" x="46" y="92" width="258" height="42" rx="8" />
+        <text class="d-label" x="60" y="119">Summary (sticky)</text>
+        <rect class="d-box" x="30" y="166" width="290" height="108" rx="10" />
+        <text class="d-muted" x="46" y="190">Parent B</text>
+        <rect class="d-accent" x="46" y="202" width="258" height="42" rx="8" />
+        <text class="d-label" x="60" y="229">Table header (sticky)</text>
+        <text class="d-muted" x="60" y="264">Rows scroll below</text>
+        <rect class="d-box" x="370" y="118" width="180" height="70" rx="10" />
+        <text class="d-label" x="384" y="147">ResizeObserver</text>
+        <text class="d-muted" x="384" y="172">sets offsets</text>
+        <path class="d-arrow" d="M370 140 L304 113" />
+        <path class="d-arrow" d="M370 168 L304 223" />
+      </svg>
+    </figure>
+
+    <h3>One payment-method form, three places</h3>
+    <p>
+      Adding a payment method had to work on the payment methods screen, inside pay by amount, and
+      in the review step of pay by invoice. Instead of copying the component, we used Vue's provide
+      and inject: each part of the app provides its own state, and the shared component injects it.
+      This sharpened my sense of when state belongs in a global store like Pinia and when it belongs
+      in dependency injection.
+    </p>
+    <figure class="diagram">
+      <svg
+        viewBox="0 0 560 220"
+        role="img"
+        aria-labelledby="inject-title inject-desc"
+        focusable="false"
+      >
+        <title id="inject-title">One component, three providers</title>
+        <desc id="inject-desc">
+          The payment methods page, pay by amount, and the pay by invoice review step each provide
+          their own state to a single shared add-payment-method component, which injects it.
+        </desc>
+        <rect class="d-box" x="4" y="10" width="176" height="72" rx="10" />
+        <text class="d-label" x="18" y="40">Methods page</text>
+        <text class="d-muted" x="18" y="64">provides state</text>
+        <rect class="d-box" x="192" y="10" width="176" height="72" rx="10" />
+        <text class="d-label" x="206" y="40">Pay by amount</text>
+        <text class="d-muted" x="206" y="64">provides state</text>
+        <rect class="d-box" x="380" y="10" width="176" height="72" rx="10" />
+        <text class="d-label" x="394" y="40">Review step</text>
+        <text class="d-muted" x="394" y="64">provides state</text>
+        <path class="d-arrow" d="M92 82 L240 140" />
+        <path class="d-arrow" d="M280 82 L280 140" />
+        <path class="d-arrow" d="M468 82 L320 140" />
+        <rect class="d-accent" x="140" y="140" width="280" height="72" rx="10" />
+        <text class="d-label" x="156" y="170">Add payment method</text>
+        <text class="d-muted" x="156" y="195">shared, injects state</text>
+      </svg>
+    </figure>
+
+    <h3>What I'd do differently</h3>
+    <p>
+      The design packed more columns into the invoice table than would fit. We ended up with either
+      heavily truncated text in a column or horizontal scrolling inside a table that also scrolled
+      and paginated vertically. This was never fully resolved during my time there. I wish I'd
+      pushed back harder at the start. The real fix was fewer columns, or user research into which
+      ones people actually needed.
+    </p>
+
+    <h2>The partner portal</h2>
+    <p>
+      Next I led frontend architecture for a B2B partner portal, where partners generate API secrets
+      to integrate with Patterson's systems, and an admin site where employees manage partners and
+      the customers assigned to them. The admin site replaced tracking that had lived in emails and
+      documents.
+    </p>
+    <p>
+      The Vue code was split between a shared UI repo and two .NET site repos. I got the team's
+      buy-in to move nearly all of it into the shared repo, routing included, so every screen could
+      be demoed and tested in Storybook. The site repos now import the routes and pass them to a
+      small launch function, an inversion-of-control pattern that keeps each repo to one job. The
+      idea was mine; I used AI to help work out the details.
+    </p>
+    <figure class="diagram">
+      <svg
+        viewBox="0 0 560 210"
+        role="img"
+        aria-labelledby="repos-title repos-desc"
+        focusable="false"
+      >
+        <title id="repos-title">Shared UI repo feeding two site repos</title>
+        <desc id="repos-desc">
+          The shared UI repo holds the components, routes, and Storybook demos. The partner portal
+          and admin site repos, both .NET, import the routes and pass them to a launch function.
+        </desc>
+        <rect class="d-accent" x="10" y="30" width="230" height="150" rx="12" />
+        <text class="d-label" x="28" y="64">Shared UI repo</text>
+        <text class="d-muted" x="28" y="96">Vue components</text>
+        <text class="d-muted" x="28" y="122">Routes</text>
+        <text class="d-muted" x="28" y="148">Storybook demos</text>
+        <rect class="d-box" x="330" y="10" width="220" height="80" rx="10" />
+        <text class="d-label" x="346" y="42">Partner portal</text>
+        <text class="d-muted" x="346" y="68">.NET, launch(routes)</text>
+        <rect class="d-box" x="330" y="120" width="220" height="80" rx="10" />
+        <text class="d-label" x="346" y="152">Admin site</text>
+        <text class="d-muted" x="346" y="178">.NET, launch(routes)</text>
+        <path class="d-arrow" d="M240 90 L330 50" />
+        <path class="d-arrow" d="M240 120 L330 160" />
+        <text class="d-muted" x="252" y="112">import</text>
+      </svg>
+    </figure>
+
+    <h2>Along the way</h2>
+    <ul>
+      <li>
+        Built a reusable Vue component library for embedded Power BI reports, and locale handling
+        for English (U.S.), English (Canada), and French (Canada), and rolled it out to both
+        e-commerce sites.
+      </li>
+      <li>
+        Mocked up a partner sales dashboard in ECharts in about a day. Most people don't know what
+        software they want until they see it, so something on screen beats a vague description.
+      </li>
+      <li>
+        Moved the organization's front-end packages from a private npm registry to JFrog
+        Artifactory, using a script I had AI write to make this effiecient for work across a couple
+        dozen repos.
+      </li>
+    </ul>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/contact/">Get in Touch</a>
+      <a
+        class="btn btn-secondary"
+        href="/Resume-David-Dangerfield.pdf"
+        target="_blank"
+        rel="noreferrer"
+        >Download Resume</a
+      >
+    </div>
+  </div>
+</section>

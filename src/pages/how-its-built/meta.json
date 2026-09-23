@@ -1,0 +1,19 @@
+{
+  "outputPath": "how-this-site-is-built/index.html",
+  "meta": {
+    "title": "How This Site Is Built | David Dangerfield",
+    "description": "Static HTML with no framework, no tracking, and CI checks on every change. The source is public, so you can check the details.",
+    "canonical": "https://daviddangerfield.com/how-this-site-is-built/",
+    "og": {
+      "title": "How This Site Is Built | David Dangerfield",
+      "description": "Static HTML with no framework, no tracking, and CI checks on every change. The source is public, so you can check the details.",
+      "type": "article",
+      "url": "https://daviddangerfield.com/how-this-site-is-built/"
+    }
+  },
+  "footer": {
+    "scheduleHref": "/contact/",
+    "scheduleTarget": null,
+    "scheduleRel": null
+  }
+}
