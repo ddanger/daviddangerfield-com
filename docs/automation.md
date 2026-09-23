@@ -35,6 +35,8 @@ Trigger:
 
 Behavior:
 
+- Runs `npm run lint:css` (Stylelint: every color, spacing, font size, radius,
+  and shadow in `styles.css` must use a design token; see `docs/agents/css.md`)
 - Runs `npm run build` (smoke test — `dist/` isn't committed, so this just
   confirms the build still succeeds)
 - Runs `npm run format:check`

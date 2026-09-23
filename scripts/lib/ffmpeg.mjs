@@ -1,9 +1,8 @@
 import { spawnSync } from 'node:child_process'
 
-// The Homebrew path where `brew install ffmpeg-full` lands its binary — the
-// only build with the drawtext filter the resume-share image needs. Shared
-// so setup.mjs (installs it) and generate-resume-share.mjs (uses it) agree
-// on where to look.
+// `brew install ffmpeg-full` is the only build with the drawtext filter the
+// resume-share image needs. setup.mjs installs it here; generate-resume-share
+// uses it.
 export const HOMEBREW_FFMPEG_FULL_BIN = '/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg'
 
 export function checkCommand(bin, args) {

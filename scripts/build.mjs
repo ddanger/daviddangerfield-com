@@ -1,36 +1,17 @@
 /**
- * BUILD-TIME ONLY — never imported by browser code.
- *
- * Assembles static HTML pages from:
- *   src/site.json                     — shared site config (theme, resume version)
- *   styles.css                        — inlined into each page <head>
- *   src/partials/layout.html          — full document shell
- *   src/partials/header.html          — shared <header>
- *   src/partials/footer.html          — shared <footer> (with schedule-link token)
- *   src/pages/{page}/content.html     — per-page <main> content
- *   src/pages/{page}/meta.json        — per-page metadata, outputPath, footer config
- *   src/partials/resume-redirect.html — the bare resume/cv meta-refresh pages
- *
- * Pages are auto-discovered by scanning src/pages/ subdirectories (see
- * scripts/lib/routes.mjs). To add a page: create src/pages/{page}/content.html
- * and meta.json. The two resume-redirect pages are a fixed, separate list
- * (scripts/lib/resume-redirects.mjs) since they don't share layout.html.
- *
- * Output: dist/ (never committed — this is the published site). Assumes
- * bundleJs() has already run (see bundle-js.mjs), since it both wipes dist/
- * for the build and produces the script.js this build hashes for
- * cache-busting. Also copies scripts/lib/static-assets.mjs's list of
- * unchanged static files (fonts, images, icons, PDFs) and hosting-provider
- * config (HOST_CONFIG_FILES, e.g. cloudflare/) into dist/.
- *
- * Usage: node scripts/build.mjs — or import { build } from './build.mjs'
- * to run it in-process (see dev.mjs).
+ * Builds dist/ (the published site, never committed) from src/. Pages are
+ * auto-discovered: a folder in src/pages/ with content.html and meta.json is a
+ * page. The /resume/ and /cv/ redirects are the exception (see
+ * scripts/lib/resume-redirects.mjs). Run bundleJs() first: it wipes dist/ and
+ * writes the script.js whose hash versions the script URL here.
  */
 
 import { readFile, writeFile, mkdir, cp } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
+import { transform } from 'esbuild'
+import { minify as minifyHtml } from 'html-minifier-terser'
 import { discoverPages } from './lib/routes.mjs'
 import { missingRequiredFields } from './lib/meta-schema.mjs'
 import { RESUME_REDIRECTS } from './lib/resume-redirects.mjs'
@@ -41,8 +22,6 @@ const ROOT_DIR = join(SCRIPTS_DIR, '..')
 const SRC_DIR = join(ROOT_DIR, 'src')
 const DIST_DIR = join(ROOT_DIR, 'dist')
 
-// dist/ is wiped by bundleJs() (which always runs first — see bundle-js.mjs)
-// so it starts from nothing on every build. This just needs it to exist.
 async function copyStaticAssets() {
   await mkdir(DIST_DIR, { recursive: true })
   for (const relPath of STATIC_ASSET_PATHS) {
@@ -56,11 +35,6 @@ async function copyStaticAssets() {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Template interpolation
-// Tokens are {{UPPER_SNAKE_CASE}}. Unknown tokens throw so nothing silently
-// falls through as a literal placeholder string.
-// ---------------------------------------------------------------------------
 function interpolate(template, vars) {
   return template.replace(/\{\{([A-Z_]+)\}\}/g, (match, key) => {
     if (key in vars) return vars[key]
@@ -68,12 +42,6 @@ function interpolate(template, vars) {
   })
 }
 
-// ---------------------------------------------------------------------------
-// Build the full <head> content string from page config + site config.
-// All optional fields (keywords, robots, og:image, twitter, schema) are
-// omitted when absent so each page ships exactly the tags it needs.
-// stylesCss is inlined to avoid a render-blocking stylesheet request.
-// ---------------------------------------------------------------------------
 function buildHeadContent(page, site, stylesCss) {
   const lines = []
 
@@ -92,7 +60,6 @@ function buildHeadContent(page, site, stylesCss) {
     lines.push(`  <meta name="robots" content="${page.meta.robots}" />`)
   }
 
-  // Open Graph
   lines.push(`  <meta property="og:title" content="${page.meta.og.title}" />`)
   lines.push(`  <meta property="og:description" content="${page.meta.og.description}" />`)
   lines.push(`  <meta property="og:type" content="${page.meta.og.type}" />`)
@@ -112,7 +79,6 @@ function buildHeadContent(page, site, stylesCss) {
     lines.push(`  <meta property="og:image:alt" content="${img.alt}" />`)
   }
 
-  // Twitter / X card
   if (page.meta.twitter) {
     const tw = page.meta.twitter
     lines.push(`  <meta name="twitter:card" content="${tw.card}" />`)
@@ -122,7 +88,6 @@ function buildHeadContent(page, site, stylesCss) {
     lines.push(`  <meta name="twitter:image:alt" content="${tw.imageAlt}" />`)
   }
 
-  // Shared meta + assets
   lines.push(`  <meta name="theme-color" content="${site.themeColor}" />`)
   lines.push(`  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />`)
   lines.push(`  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />`)
@@ -136,77 +101,68 @@ function buildHeadContent(page, site, stylesCss) {
   lines.push(
     `  <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />`,
   )
-  // Escape any accidental </style> sequences so inlining cannot close the tag early.
+  // CSS is inlined to avoid a render-blocking request. Escape any </style> in
+  // it so the inlined block can't close early.
   const safeCss = stylesCss.replace(/<\/style/gi, '<\\/style')
   lines.push(`  <style>`)
   lines.push(safeCss)
   lines.push(`  </style>`)
 
-  // Optional JSON-LD structured data
   if (page.schemaJson) {
-    const indented = JSON.stringify(page.schemaJson, null, 6)
-      .split('\n')
-      .map((l) => `    ${l}`)
-      .join('\n')
     lines.push(`  <script type="application/ld+json">`)
-    lines.push(indented)
+    lines.push(JSON.stringify(page.schemaJson))
     lines.push(`  </script>`)
   }
 
   return lines.join('\n')
 }
 
-// ---------------------------------------------------------------------------
-// Build the footer schedule <a> tag from per-page footer config.
-// ---------------------------------------------------------------------------
 function buildFooterScheduleLink(footer) {
   const targetAttr = footer.scheduleTarget ? ` target="${footer.scheduleTarget}"` : ''
   const relAttr = footer.scheduleRel ? ` rel="${footer.scheduleRel}"` : ''
   return `<a href="${footer.scheduleHref}"${targetAttr}${relAttr}>Schedule</a>`
 }
 
-// ---------------------------------------------------------------------------
-// Main build
-// ---------------------------------------------------------------------------
 function injectVersionedResumeLinks(content, resumeUrl) {
   return content.replaceAll('/Resume-David-Dangerfield.pdf', resumeUrl)
 }
 
-// ---------------------------------------------------------------------------
-// script.js is served with a long Browser Cache TTL, so it needs a
-// cache-busting query param that changes whenever its content does. Rather
-// than a manually-bumped version (like resumeVersion in site.json), this
-// hashes the already-bundled script.js — deterministic, so `npm run build`
-// produces the same {{SCRIPT_VERSION}} on every machine/CI run as long as
-// the bundled output is unchanged, and it can't be forgotten on a deploy.
-// ---------------------------------------------------------------------------
+// script.js is cached as immutable (cloudflare/_headers), so its URL carries a
+// hash of its content: deterministic across machines and never forgotten.
 function hashScriptVersion(scriptJs) {
   return createHash('sha256').update(scriptJs).digest('hex').slice(0, 10)
 }
 
-async function writeGenerated(outputPath, html, sourceLabel) {
-  const generatedComment = [
-    `<!-- GENERATED FILE: do not edit directly. -->`,
-    `<!-- Source: ${sourceLabel} -->`,
-    `<!-- Regenerate: npm run build -->`,
-  ].join('\n')
+// Keep the email_off comments: the host's edge reads them (README, Hosting).
+const HTML_MINIFY_OPTIONS = {
+  collapseWhitespace: true,
+  removeComments: true,
+  ignoreCustomComments: [/^\/?email_off$/],
+  collapseBooleanAttributes: true,
+}
 
+async function writeGenerated(outputPath, html, minify) {
   const fullPath = join(DIST_DIR, outputPath)
   await mkdir(dirname(fullPath), { recursive: true })
-  await writeFile(fullPath, `${generatedComment}\n${html}`, 'utf8')
+  const output = minify ? await minifyHtml(html, HTML_MINIFY_OPTIONS) : html
+  await writeFile(fullPath, output, 'utf8')
   console.log(`  ✓ dist/${outputPath}`)
 }
 
-export async function build() {
+// dev.mjs passes minify: false so local output stays readable.
+export async function build({ minify = true } = {}) {
   await copyStaticAssets()
 
   const site = JSON.parse(await readFile(join(SRC_DIR, 'site.json'), 'utf8'))
-  const stylesCss = await readFile(join(ROOT_DIR, 'styles.css'), 'utf8')
+  const rawCss = await readFile(join(ROOT_DIR, 'styles.css'), 'utf8')
+  const stylesCss = minify
+    ? (await transform(rawCss, { loader: 'css', minify: true })).code
+    : rawCss
   const layout = await readFile(join(SRC_DIR, 'partials', 'layout.html'), 'utf8')
   const scriptJs = await readFile(join(DIST_DIR, 'script.js')).catch((err) => {
     if (err.code === 'ENOENT') {
       throw new Error(
-        'dist/script.js not found. Run `npm run build:js` (or `npm run build`) first — ' +
+        'dist/script.js not found. Run `npm run build:js` (or `npm run build`) first. ' +
           'build.mjs hashes the bundled script.js for cache-busting and assumes it already exists.',
       )
     }
@@ -255,11 +211,7 @@ export async function build() {
       SCRIPT_VERSION: scriptVersion,
     })
 
-    await writeGenerated(
-      page.outputPath,
-      html,
-      `src/pages/${pageId}/content.html + src/partials/layout.html`,
-    )
+    await writeGenerated(page.outputPath, html, minify)
     written.push(page.outputPath)
   }
 
@@ -269,16 +221,14 @@ export async function build() {
       interpolate(redirectTemplate, { CANONICAL_URL: redirect.canonicalUrl }),
       site.resumeUrl,
     )
-    await writeGenerated(redirect.outputPath, html, 'src/partials/resume-redirect.html')
+    await writeGenerated(redirect.outputPath, html, minify)
     written.push(redirect.outputPath)
   }
 
-  console.log(`\nBuild complete — ${written.length} pages generated.`)
+  console.log(`\nBuild complete: ${written.length} pages generated.`)
   return { written }
 }
 
-// Only run when executed directly (`node scripts/build.mjs`), not when
-// imported — dev.mjs imports build() and calls it in-process instead.
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
   build().catch((err) => {
     console.error('\nBuild failed:', err.message)

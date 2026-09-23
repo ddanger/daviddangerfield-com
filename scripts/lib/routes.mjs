@@ -21,10 +21,8 @@ export function isIndexable(meta) {
   return !robots.includes('noindex')
 }
 
-// A "public route" is one build.mjs generates, that carries a real page
-// (trailing-slash route, not a helper page with no src/pages source), and
-// that's meant to be listed (not marked noindex). generate-sitemap.mjs and
-// uptime-check.mjs both want exactly this set.
+// Public routes: real, indexable pages (not helper redirects or noindex).
+// The sitemap and uptime check both use this set.
 export function publicRoutes(pages) {
   return pages.filter(
     (page) =>
