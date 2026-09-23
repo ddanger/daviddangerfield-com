@@ -77,6 +77,8 @@
    600px stacks label/value pairs, 760px collapses the nav, 900px goes to one
    column. */
 :root {
+  color-scheme: light dark;
+
   /* Palette: the only place raw colors appear. */
   --teal-700: #155e63;
   --teal-100: #e3eeee;
@@ -91,6 +93,20 @@
   --sand-300: #eee5d5;
   --sand-400: #e4dacb;
   --sand-500: #d7ccb9;
+  --teal-300: #6cc3be;
+  --teal-900: #183d3e;
+  --teal-950: #0e1b1b;
+  --rust-400: #e8895a;
+  --black: #000;
+  --cream-100: #f2ede5;
+  --cream-300: #d8d1c6;
+  --cream-500: #aea598;
+  --night-600: #544d45;
+  --night-700: #38332e;
+  --night-800: #2d2a26;
+  --night-850: #211e1b;
+  --night-900: #1c1a17;
+  --night-950: #161412;
 
   /* Roles: components use these, never the palette, so a theme only
      redefines roles. */
@@ -111,6 +127,7 @@
   --color-accent-subtle: var(--teal-100);
   --color-on-accent: var(--white);
   --color-brand: var(--rust-600);
+  --color-shadow: var(--ink-900);
   --page-backdrop:
     radial-gradient(circle at 15% 20%, var(--color-glow-accent), transparent 40%),
     radial-gradient(circle at 80% 10%, var(--color-glow-brand), transparent 45%), var(--color-bg);
@@ -141,9 +158,9 @@
   --radius-md: 14px;
   --radius-lg: 22px;
   --radius-pill: 999px;
-  --shadow-sm: 0 4px 14px color-mix(in srgb, var(--ink-900) 8%, transparent);
-  --shadow-accent: 0 6px 20px color-mix(in srgb, var(--teal-700) 20%, transparent);
-  --shadow-lg: 0 12px 40px color-mix(in srgb, var(--ink-900) 10%, transparent);
+  --shadow-sm: 0 4px 14px color-mix(in srgb, var(--color-shadow) 8%, transparent);
+  --shadow-accent: 0 6px 20px color-mix(in srgb, var(--color-accent) 20%, transparent);
+  --shadow-lg: 0 12px 40px color-mix(in srgb, var(--color-shadow) 10%, transparent);
   --duration-fast: 180ms;
   --duration-slow: 550ms;
   --ease: ease;
@@ -153,6 +170,31 @@
   --header-height: 4.5rem;
   --z-header: 100;
   --z-skip-link: 200;
+}
+
+/* Follows the OS setting; there is no toggle, so no script and no flash of
+   the wrong theme. Accent turns light here, so text on it turns dark. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--night-950);
+    --color-bg-alt: color-mix(in srgb, var(--night-900) 70%, transparent);
+    --color-bg-header: color-mix(in srgb, var(--night-950) 88%, transparent);
+    --color-glow-accent: color-mix(in srgb, var(--teal-300) 9%, transparent);
+    --color-glow-brand: color-mix(in srgb, var(--rust-400) 7%, transparent);
+    --color-surface: var(--night-850);
+    --color-surface-muted: var(--night-900);
+    --color-surface-hover: var(--night-800);
+    --color-text: var(--cream-100);
+    --color-text-soft: var(--cream-300);
+    --color-text-muted: var(--cream-500);
+    --color-border: var(--night-600);
+    --color-border-subtle: var(--night-700);
+    --color-accent: var(--teal-300);
+    --color-accent-subtle: var(--teal-900);
+    --color-on-accent: var(--teal-950);
+    --color-brand: var(--rust-400);
+    --color-shadow: var(--black);
+  }
 }
 
 * {
