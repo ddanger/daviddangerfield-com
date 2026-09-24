@@ -1,0 +1,309 @@
+/* Resume page only (build.mjs inlines it after styles.css via meta.json
+   "stylesheet"). The resume is a printed document, not a themed site surface:
+   it stays black on white in dark mode, sizes are in points, and the tokens
+   below are its own. Values were measured from the Google Docs export this
+   page replaced, so print output lands on the same two US Letter pages.
+   Changing a size or gap here can move the page break; npm run
+   update:resume rebuilds the PDF and fails if it isn't two pages. */
+
+/* Static instances of the site's variable fonts (fontTools varLib.instancer:
+   Space Grotesk wght 400 and 700, Fraunces opsz 9). Chrome embeds variable
+   fonts in PDFs as Type 3, which ATS parsers and PDF viewers handle poorly;
+   static fonts embed as TrueType. Fraunces opsz 9 is also what Google Docs
+   rendered. */
+/* stylelint-disable scale-unlimited/declaration-strict-value */
+@font-face {
+  font-family: 'Resume Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/resume/space-grotesk-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Resume Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/resume/space-grotesk-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Resume Fraunces';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/resume/fraunces-700.woff2') format('woff2');
+}
+/* stylelint-enable scale-unlimited/declaration-strict-value */
+
+.resume {
+  --resume-paper: #fff;
+  --resume-ink: #111;
+  --resume-text: #1a1a1a;
+  --resume-soft: #444;
+  --resume-industries: #4d4d4d;
+  --resume-dates: #666;
+  --resume-contact: #6b6b6b;
+  --resume-tech: #777;
+  --resume-accent: #155e63;
+  --resume-company: #2f5f8f;
+  --resume-link: #15c;
+  --resume-rule: #7fa3b0;
+  --resume-font-body: 'Resume Space Grotesk', var(--font-body);
+  --resume-font-display: 'Resume Fraunces', var(--font-display);
+  --resume-font-docs: arial, 'Liberation Sans', helvetica, sans-serif;
+  --resume-size-name: 28pt;
+  --resume-size-headline: 14pt;
+  --resume-size-heading: 12pt;
+  --resume-size-role: 10.75pt;
+  --resume-size-contact: 10.5pt;
+  --resume-size-body: 10.25pt;
+  --resume-size-docs: 10pt;
+  --resume-size-small: 9.5pt;
+  --resume-size-tech: 9pt;
+
+  /* Docs' single spacing: each font's ascent plus descent. Written out
+     because Chrome rounds line-height: normal to whole pixels, which drifts
+     the layout a few points per column. */
+  --resume-leading-single: 1.276;
+  --resume-leading-name: 1.233;
+  --resume-leading-docs: 11.5pt;
+  --resume-leading-skills: 12.4pt;
+  --resume-leading-education: 13.5pt;
+  --resume-gap-hairline: 1pt;
+  --resume-gap-rule: 2.5pt;
+  --resume-gap-job: 3.6pt;
+  --resume-gap-section: 6pt;
+  --resume-bullet-indent: 27pt;
+  --resume-bullet-gutter: 12.8pt;
+  --resume-tech-indent: 17.3pt;
+
+  /* Bold Space Grotesk sets about 1% wider in Chrome than in Docs, enough to
+     push a word onto its own line in bullets that fill the column. */
+  --resume-tracking-bold: -0.006em;
+  --resume-page-y: 0.5in;
+  --resume-page-x: 0.6in;
+
+  /* Google Docs right tab stop for dates: 90.9pt short of the right margin. */
+  --resume-date-column: 434.7pt;
+
+  color-scheme: light;
+  max-width: 8.5in;
+  margin: var(--space-5) auto var(--space-8);
+  padding: var(--resume-page-y) var(--resume-page-x);
+  background: var(--resume-paper);
+  box-shadow: var(--shadow-lg);
+  color: var(--resume-ink);
+  font-family: var(--resume-font-body);
+  font-size: var(--resume-size-body);
+  line-height: var(--resume-leading-single);
+
+  /* Ligature glyphs extract as U+FB01 and friends, which ATS parsers misread
+     ("Dangerﬁeld"). Docs doesn't kern, and kerning narrows lines enough to
+     move line breaks. */
+  font-variant-ligatures: no-common-ligatures;
+  font-kerning: none;
+}
+
+/* :where keeps this reset below the single-class rules that follow. */
+.resume :where(h1, h2, h3, p, ul) {
+  margin: 0;
+  line-height: inherit;
+}
+
+.resume :where(ul) {
+  padding: 0;
+  list-style: none;
+}
+
+.resume a {
+  color: var(--resume-link);
+}
+
+.resume-header {
+  text-align: center;
+}
+
+.resume-name {
+  font-family: var(--resume-font-display);
+  font-size: var(--resume-size-name);
+  line-height: var(--resume-leading-name);
+}
+
+.resume-headline {
+  margin-top: var(--resume-gap-hairline);
+  color: var(--resume-accent);
+  font-size: var(--resume-size-headline);
+  font-weight: 700;
+}
+
+.resume-industries {
+  margin-top: var(--resume-gap-hairline);
+  color: var(--resume-industries);
+  font-size: var(--resume-size-heading);
+  font-weight: 700;
+}
+
+.resume-contact {
+  margin-top: var(--resume-gap-hairline);
+  color: var(--resume-contact);
+  font-size: var(--resume-size-contact);
+}
+
+.resume h2 {
+  margin: var(--resume-gap-section) 0 var(--resume-gap-rule);
+  padding-bottom: var(--resume-gap-rule);
+  border-bottom: 1px solid var(--resume-rule);
+  color: var(--resume-accent);
+  font-family: var(--resume-font-body);
+  font-size: var(--resume-size-heading);
+  text-transform: uppercase;
+  break-after: avoid;
+}
+
+.resume-availability {
+  font-weight: 700;
+}
+
+.resume-summary {
+  color: var(--resume-text);
+  font-family: var(--resume-font-docs);
+  font-size: var(--resume-size-docs);
+  line-height: var(--resume-leading-docs);
+}
+
+.resume-skills {
+  color: var(--resume-soft);
+  font-family: var(--resume-font-docs);
+  font-size: var(--resume-size-small);
+  line-height: var(--resume-leading-skills);
+}
+
+.resume-skills strong,
+.resume-education strong {
+  color: var(--resume-text);
+}
+
+.resume-job + .resume-job {
+  margin-top: var(--resume-gap-job);
+}
+
+.resume-job-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: var(--resume-gap-rule);
+  max-width: var(--resume-date-column);
+  break-after: avoid;
+}
+
+.resume-role {
+  font-size: var(--resume-size-role);
+  letter-spacing: var(--resume-tracking-bold);
+}
+
+.resume-dates {
+  color: var(--resume-dates);
+  font-size: var(--resume-size-docs);
+  font-style: italic;
+}
+
+.resume-company {
+  color: var(--resume-company);
+  break-after: avoid;
+}
+
+.resume-bullets {
+  margin-top: var(--resume-gap-hairline);
+}
+
+.resume-bullets li {
+  padding-left: var(--resume-bullet-indent);
+  break-inside: avoid;
+}
+
+.resume-bullets strong {
+  letter-spacing: var(--resume-tracking-bold);
+}
+
+/* In normal flow, not positioned: Chrome paints positioned boxes after the
+   rest, which puts each job's bullets after its Tech line in the PDF's text
+   order, and that's the order ATS parsers read. */
+.resume-bullets li::before {
+  content: '●';
+  display: inline-block;
+  width: var(--resume-bullet-gutter);
+  margin-left: calc(-1 * var(--resume-bullet-gutter));
+  font-family: var(--resume-font-docs);
+  font-size: var(--resume-size-docs);
+}
+
+.resume-tech {
+  padding-left: var(--resume-tech-indent);
+  color: var(--resume-tech);
+  font-size: var(--resume-size-tech);
+  font-style: italic;
+  break-before: avoid;
+}
+
+.resume-education {
+  color: var(--resume-soft);
+  font-family: var(--resume-font-docs);
+  font-size: var(--resume-size-small);
+  line-height: var(--resume-leading-education);
+}
+
+.resume-education strong {
+  font-size: var(--resume-size-docs);
+}
+
+.resume-nowrap {
+  white-space: nowrap;
+}
+
+.resume-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-5);
+}
+
+@media screen and (width <= 900px) {
+  .resume {
+    --resume-page-y: var(--space-5);
+    --resume-page-x: var(--space-4);
+    --resume-date-column: none;
+  }
+}
+
+/* Print and the build script's headless Chrome share these rules, so the
+   downloaded PDF and a visitor's Save as PDF match. */
+@media print {
+  /* @page can't read custom properties. */
+  @page {
+    size: letter;
+    /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+    margin: 0.5in 0.6in;
+  }
+
+  body {
+    display: block;
+    min-height: 0;
+    background: none;
+  }
+
+  .skip-link,
+  .site-header,
+  .site-footer,
+  .resume-toolbar {
+    display: none;
+  }
+
+  .resume {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+}

@@ -71,7 +71,7 @@ test('publicRoutes keeps only indexable, trailing-slash, non-helper routes', () 
   const pages = [
     { route: '/about/', metaError: null, indexable: true },
     { route: '/private/', metaError: null, indexable: false }, // noindex
-    { route: '/resume/', metaError: null, indexable: true }, // helper route
+    { route: '/cv/', metaError: null, indexable: true }, // helper route
     { route: '/broken', metaError: 'bad json', indexable: true },
     { route: '/legacy.html', metaError: null, indexable: true }, // no trailing slash
   ]

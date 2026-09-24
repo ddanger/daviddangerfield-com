@@ -4,3 +4,5 @@
 /services.html  /services/                                         301
 /schedule       https://calendly.com/daviddangerfield/recruiters   301
 /schedule/      https://calendly.com/daviddangerfield/recruiters   301
+/cv             /resume/                                           301
+/cv/            /resume/                                           301

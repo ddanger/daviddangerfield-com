@@ -6,7 +6,7 @@ const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..', '..')
 const PAGES_DIR = join(ROOT_DIR, 'src', 'pages')
 
-export const HELPER_ROUTES = new Set(['/schedule/', '/cv/', '/resume/'])
+export const HELPER_ROUTES = new Set(['/schedule/', '/cv/'])
 
 export function outputPathToRoute(outputPath) {
   if (outputPath === 'index.html') return '/'

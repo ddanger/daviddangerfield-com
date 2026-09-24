@@ -1,9 +1,8 @@
 /**
  * Builds dist/ (the published site, never committed) from src/. Pages are
  * auto-discovered: a folder in src/pages/ with content.html and meta.json is a
- * page. The /resume/ and /cv/ redirects are the exception (see
- * scripts/lib/resume-redirects.mjs). Run bundleJs() first: it wipes dist/ and
- * writes the script.js whose hash versions the script URL here.
+ * page. Run bundleJs() first: it wipes dist/ and writes the script.js whose
+ * hash versions the script URL here.
  */
 
 import { readFile, writeFile, mkdir, cp } from 'node:fs/promises'
@@ -14,7 +13,6 @@ import { transform } from 'esbuild'
 import { minify as minifyHtml } from 'html-minifier-terser'
 import { discoverPages } from './lib/routes.mjs'
 import { missingRequiredFields } from './lib/meta-schema.mjs'
-import { RESUME_REDIRECTS } from './lib/resume-redirects.mjs'
 import { STATIC_ASSET_PATHS, HOST_CONFIG_FILES } from './lib/static-assets.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
@@ -123,14 +121,15 @@ function buildFooterScheduleLink(footer) {
   return `<a href="${footer.scheduleHref}"${targetAttr}${relAttr}>Schedule</a>`
 }
 
-function injectVersionedResumeLinks(content, resumeUrl) {
-  return content.replaceAll('/Resume-David-Dangerfield.pdf', resumeUrl)
+// script.js is cached as immutable (cloudflare/_headers), so its URL carries a
+// hash of its content: deterministic across machines and never forgotten. The
+// resume PDF's links are versioned the same way.
+function hashVersion(content) {
+  return createHash('sha256').update(content).digest('hex').slice(0, 10)
 }
 
-// script.js is cached as immutable (cloudflare/_headers), so its URL carries a
-// hash of its content: deterministic across machines and never forgotten.
-function hashScriptVersion(scriptJs) {
-  return createHash('sha256').update(scriptJs).digest('hex').slice(0, 10)
+function injectVersionedResumeLinks(content, resumeUrl) {
+  return content.replaceAll('/Resume-David-Dangerfield.pdf', resumeUrl)
 }
 
 // Keep the email_off comments: the host's edge reads them (README, Hosting).
@@ -154,10 +153,9 @@ export async function build({ minify = true } = {}) {
   await copyStaticAssets()
 
   const site = JSON.parse(await readFile(join(SRC_DIR, 'site.json'), 'utf8'))
-  const rawCss = await readFile(join(ROOT_DIR, 'styles.css'), 'utf8')
-  const stylesCss = minify
-    ? (await transform(rawCss, { loader: 'css', minify: true })).code
-    : rawCss
+  const prepareCss = async (rawCss) =>
+    minify ? (await transform(rawCss, { loader: 'css', minify: true })).code : rawCss
+  const stylesCss = await prepareCss(await readFile(join(ROOT_DIR, 'styles.css'), 'utf8'))
   const layout = await readFile(join(SRC_DIR, 'partials', 'layout.html'), 'utf8')
   const scriptJs = await readFile(join(DIST_DIR, 'script.js')).catch((err) => {
     if (err.code === 'ENOENT') {
@@ -168,14 +166,16 @@ export async function build({ minify = true } = {}) {
     }
     throw err
   })
-  const scriptVersion = hashScriptVersion(scriptJs)
+  const scriptVersion = hashVersion(scriptJs)
+  const resumePdf = await readFile(join(ROOT_DIR, 'Resume-David-Dangerfield.pdf'))
+  const resumeUrl = `/Resume-David-Dangerfield.pdf?v=${hashVersion(resumePdf)}`
   const headerPartial = injectVersionedResumeLinks(
     await readFile(join(SRC_DIR, 'partials', 'header.html'), 'utf8'),
-    site.resumeUrl,
+    resumeUrl,
   )
   const footerPartial = injectVersionedResumeLinks(
     await readFile(join(SRC_DIR, 'partials', 'footer.html'), 'utf8'),
-    site.resumeUrl,
+    resumeUrl,
   )
 
   const discovered = await discoverPages(ROOT_DIR)
@@ -195,10 +195,15 @@ export async function build({ minify = true } = {}) {
   for (const { pageId, pageDir, meta: page } of discovered) {
     const pageContent = injectVersionedResumeLinks(
       await readFile(join(pageDir, 'content.html'), 'utf8'),
-      site.resumeUrl,
+      resumeUrl,
     )
 
-    const headContent = buildHeadContent(page, site, stylesCss)
+    // Optional meta.json "stylesheet": a CSS file in the page folder, inlined
+    // after styles.css on that page only.
+    const pageCss = page.stylesheet
+      ? await prepareCss(await readFile(join(pageDir, page.stylesheet), 'utf8'))
+      : ''
+    const headContent = buildHeadContent(page, site, `${stylesCss}\n${pageCss}`)
     const footer = interpolate(footerPartial, {
       FOOTER_SCHEDULE_LINK: buildFooterScheduleLink(page.footer),
     })
@@ -213,16 +218,6 @@ export async function build({ minify = true } = {}) {
 
     await writeGenerated(page.outputPath, html, minify)
     written.push(page.outputPath)
-  }
-
-  const redirectTemplate = await readFile(join(SRC_DIR, 'partials', 'resume-redirect.html'), 'utf8')
-  for (const redirect of RESUME_REDIRECTS) {
-    const html = injectVersionedResumeLinks(
-      interpolate(redirectTemplate, { CANONICAL_URL: redirect.canonicalUrl }),
-      site.resumeUrl,
-    )
-    await writeGenerated(redirect.outputPath, html, minify)
-    written.push(redirect.outputPath)
   }
 
   console.log(`\nBuild complete: ${written.length} pages generated.`)
