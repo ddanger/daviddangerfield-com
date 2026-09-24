@@ -10,3 +10,7 @@ dist/
 .DS_Store
 
 temp/
+
+# Tailored resume variants (npm run resume:variant). Ephemeral and private:
+# they show where David is applying, so they're never committed.
+applications/

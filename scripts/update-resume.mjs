@@ -1,132 +1,90 @@
 #!/usr/bin/env node
+/**
+ * Rebuilds the resume PDF and its link-preview image from src/pages/resume/,
+ * then stops for review. Nothing is committed; the committed PDF is the
+ * reviewed one. Run it here, not in CI: the resume uses the macOS Arial font.
+ */
 
-import { access, readFile, writeFile } from 'node:fs/promises'
-import { constants } from 'node:fs'
+import { copyFile, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { spawnSync } from 'node:child_process'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { spawnSync } from 'node:child_process'
+import { bundleJs } from './bundle-js.mjs'
+import { build } from './build.mjs'
+import { launchBrowser } from './lib/resume-browser.mjs'
+import { printResumePdf } from './lib/resume-pdf.mjs'
+import { renderResumeShare } from './lib/resume-share.mjs'
+import { hashResumeSource, RESUME_PDF } from './lib/resume-source.mjs'
 
-const SCRIPTS_DIR = join(fileURLToPath(new URL('.', import.meta.url)))
-const ROOT_DIR = join(SCRIPTS_DIR, '..')
-const SOURCE_FILE = join(ROOT_DIR, 'src', 'site.json')
-const PDF_PATH = join(ROOT_DIR, 'Resume-David-Dangerfield.pdf')
+const ROOT_DIR = fileURLToPath(new URL('..', import.meta.url))
+const DIST_DIR = join(ROOT_DIR, 'dist')
+const SITE_JSON = join(ROOT_DIR, 'src', 'site.json')
+const SHARE_IMAGE = 'images/social/resume-share.png'
 
-function formatDateStamp(date = new Date()) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}${month}${day}`
-}
-
-function parseSequence(version) {
-  const match = String(version).match(/-(\d+)$/)
-  return match ? Number(match[1]) : 0
-}
-
-function resolveVersion(requestedVersion, currentVersion) {
-  const today = formatDateStamp()
-  const currentDate = String(currentVersion || '').split('-')[0]
-
-  if (requestedVersion) {
-    const requestedDate = String(requestedVersion).split('-')[0]
-    if (requestedVersion === currentVersion) {
-      if (requestedDate === today) {
-        return `${today}-${parseSequence(currentVersion) + 1}`
-      }
-      return requestedVersion
-    }
-    return requestedVersion
-  }
-
-  if (currentVersion === today) {
-    return `${today}-1`
-  }
-
-  if (currentDate === today && String(currentVersion).startsWith(`${today}-`)) {
-    return `${today}-${parseSequence(currentVersion) + 1}`
-  }
-
-  return today
-}
-
-function parseArgs(argv, currentVersion) {
-  let version = ''
-
-  for (let i = 0; i < argv.length; i += 1) {
-    const token = argv[i]
-
-    if (token === '--version') {
-      version = argv[i + 1] || ''
-      i += 1
-      continue
-    }
-
-    if (token === '--help' || token === '-h') {
+function parseArgs(argv) {
+  const args = { open: process.platform === 'darwin' }
+  for (const token of argv) {
+    if (token === '--no-open') {
+      args.open = false
+    } else if (token === '--help' || token === '-h') {
       console.log(`
-Usage: npm run update:resume [--version YYYYMMDD or YYYYMMDD-N]
+Usage: npm run update:resume [-- --no-open]
 
-Replaces the resume version in src/site.json, regenerates the social-share image,
-and rebuilds the static HTML with the latest cache-busting resume URL.
-If you update the resume more than once on the same day, the script automatically
-increments the version suffix so browsers fetch the newest PDF.
+Builds the site, prints ${RESUME_PDF} from /resume/, checks it (two pages,
+no Type 3 fonts, text matches the page), renders ${SHARE_IMAGE}, and records
+the resume source hash in src/site.json. On macOS it opens both files for
+review.
 `)
       process.exit(0)
+    } else {
+      throw new Error(`Unknown argument: ${token}`)
     }
-
-    throw new Error(`Unknown argument: ${token}`)
   }
-
-  return resolveVersion(version, currentVersion)
+  return args
 }
 
-function run(command, args, label) {
-  const result = spawnSync(command, args, {
-    cwd: ROOT_DIR,
-    stdio: 'inherit',
-  })
-
-  if (result.error) {
-    throw result.error
-  }
-
-  if (result.status !== 0) {
-    throw new Error(`${label} failed with exit code ${result.status}`)
-  }
-}
-
-async function ensureFileExists(path, label) {
-  try {
-    await access(path, constants.F_OK)
-  } catch {
-    throw new Error(`${label} not found: ${path}`)
-  }
+async function buildSite() {
+  await bundleJs()
+  await build()
 }
 
 async function main() {
-  const source = JSON.parse(await readFile(SOURCE_FILE, 'utf8'))
-  const version = parseArgs(process.argv.slice(2), source.resumeVersion)
+  const args = parseArgs(process.argv.slice(2))
+  await buildSite()
 
-  await ensureFileExists(PDF_PATH, 'Resume PDF')
+  // Printed to a scratch file first: a draft that fails its checks stays
+  // there for inspection and never replaces the reviewed PDF.
+  const scratch = await mkdtemp(join(tmpdir(), 'resume-'))
+  const draftPdf = join(scratch, RESUME_PDF)
+  const browser = await launchBrowser()
+  try {
+    const { pages } = await printResumePdf(browser, DIST_DIR, draftPdf)
+    await copyFile(draftPdf, join(ROOT_DIR, RESUME_PDF))
+    console.log(`\n  ✓ ${RESUME_PDF} (${pages} pages, text matches the page)`)
 
-  source.resumeVersion = version
-  source.resumeUrl = `/Resume-David-Dangerfield.pdf?v=${version}`
+    await renderResumeShare(browser, ROOT_DIR, DIST_DIR, join(ROOT_DIR, SHARE_IMAGE))
+    console.log(`  ✓ ${SHARE_IMAGE}`)
+  } finally {
+    await browser.close()
+  }
+  await rm(scratch, { recursive: true, force: true })
 
-  await writeFile(SOURCE_FILE, `${JSON.stringify(source, null, 2)}\n`, 'utf8')
-  console.log(`Updated resume version to ${version}`)
+  const site = JSON.parse(await readFile(SITE_JSON, 'utf8'))
+  site.resumeSourceHash = await hashResumeSource(ROOT_DIR)
+  await writeFile(SITE_JSON, `${JSON.stringify(site, null, 2)}\n`, 'utf8')
+  console.log(`  ✓ src/site.json resumeSourceHash ${site.resumeSourceHash}`)
 
-  run(
-    'node',
-    ['scripts/generate-resume-share.mjs', '--input', 'Resume-David-Dangerfield.pdf'],
-    'Generate resume share image',
-  )
-  run('npm', ['run', 'build'], 'Regenerate site HTML')
-  run('node', ['scripts/validate-source.mjs'], 'Validate source configuration')
+  // The PDF's links carry a hash of the PDF, so rebuild with the new one.
+  await buildSite()
 
-  console.log(`\nResume update complete.`)
-  console.log(`Current URL: /Resume-David-Dangerfield.pdf?v=${version}`)
+  console.log(`\nReview ${RESUME_PDF} and ${SHARE_IMAGE}, then commit them with src/site.json.`)
+  if (args.open) {
+    spawnSync('open', [join(ROOT_DIR, RESUME_PDF), join(ROOT_DIR, SHARE_IMAGE)])
+  }
 }
 
-main().catch((error) => {
-  console.error(`\nResume update failed: ${error.message}`)
+main().catch((err) => {
+  console.error(`\nResume update failed: ${err.message}`)
   process.exit(1)
 })

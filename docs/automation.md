@@ -69,7 +69,7 @@ Behavior:
 
 - Runs `node scripts/generate-sitemap.mjs`
 - Discovers routes from `src/pages` metadata
-- Excludes helper redirects (`/schedule/`, `/cv/`, `/resume/`) and `noindex` pages
+- Excludes helper redirects (`/schedule/`, `/cv/`) and `noindex` pages
 - Uses git history for `lastmod`
 - Commits `sitemap.xml` only when changed
 
@@ -98,13 +98,13 @@ If your ruleset does not allow GitHub Actions as a bypass actor, add `Repository
 
 ## Updating the Resume PDF
 
-When replacing `Resume-David-Dangerfield.pdf`, run through this checklist before pushing:
+The PDF is printed from the `/resume/` page on your machine, never in CI. See **Updating the Resume** in the README. Before pushing:
 
-- [ ] Replace `Resume-David-Dangerfield.pdf` in the repo root
-- [ ] Run `npm run update:resume` to regenerate `images/social/resume-share.png` and bump the cache-busting version in `src/site.json`
-- [ ] Visually verify the output image looks correct
-- [ ] `git add Resume-David-Dangerfield.pdf images/social/resume-share.png src/site.json`
-- [ ] Commit and push — Cloudflare Pages rebuilds `dist/` from this automatically
+- [ ] Edit `src/pages/resume/resume.json` (content) or `resume.css` (layout)
+- [ ] Run `npm run update:resume` (it fails if the PDF isn't two pages or its text doesn't match the page)
+- [ ] Review `Resume-David-Dangerfield.pdf` and `images/social/resume-share.png`
+- [ ] `git add src/pages/resume Resume-David-Dangerfield.pdf images/social/resume-share.png src/site.json`
+- [ ] Commit and push. Cloudflare Pages copies the committed PDF; `validate:source` fails the PR if the resume changed without a rebuilt PDF
 
 ## Required Secret
 

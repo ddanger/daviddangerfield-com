@@ -5,6 +5,7 @@ import { constants as fsConstants } from 'node:fs'
 import path from 'node:path'
 import { discoverPages, HELPER_ROUTES, ROOT_DIR } from './lib/routes.mjs'
 import { missingRequiredFields } from './lib/meta-schema.mjs'
+import { hashResumeSource, RESUME_PDF } from './lib/resume-source.mjs'
 
 function isExternalOrIgnored(ref) {
   if (!ref) return true
@@ -135,19 +136,10 @@ async function main() {
   const errors = []
   const site = JSON.parse(await readFile(path.join(ROOT_DIR, 'src', 'site.json'), 'utf8'))
 
-  const resumeVersion = String(site.resumeVersion || '')
-  if (!resumeVersion) {
-    errors.push('src/site.json: resumeVersion is required and must be a non-empty string')
-  } else if (!/^\d{8}(?:-\d+)?$/.test(resumeVersion)) {
+  const resumeSourceHash = await hashResumeSource(ROOT_DIR)
+  if (site.resumeSourceHash !== resumeSourceHash) {
     errors.push(
-      'src/site.json: resumeVersion must be an 8-digit date like 20260831 or a same-day revision like 20260831-2',
-    )
-  }
-
-  const resumeUrl = String(site.resumeUrl || '')
-  if (!resumeUrl.startsWith('/Resume-David-Dangerfield.pdf?v=')) {
-    errors.push(
-      'src/site.json: resumeUrl must include a version query string such as /Resume-David-Dangerfield.pdf?v=20260831',
+      `src/site.json: resumeSourceHash is ${site.resumeSourceHash || 'missing'}, but the resume source hashes to ${resumeSourceHash}. The resume changed since ${RESUME_PDF} was built: run npm run update:resume, review the PDF, and commit it.`,
     )
   }
 

@@ -3,29 +3,31 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "setup:init": "node scripts/setup.mjs && npm install",
+    "setup:init": "npm install && node scripts/setup.mjs",
     "prepare": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit",
     "dev": "node scripts/dev.mjs",
     "build:js": "node scripts/bundle-js.mjs",
     "build:html": "node scripts/build.mjs",
-    "generate:resume-share": "node scripts/generate-resume-share.mjs --input Resume-David-Dangerfield.pdf --output images/social/resume-share.png",
     "update:resume": "node scripts/update-resume.mjs",
+    "resume:variant": "node scripts/resume-variant.mjs",
     "validate:source": "node scripts/validate-source.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "check:uptime": "node scripts/uptime-check.mjs",
-    "format": "prettier --write \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" styles.css",
-    "format:check": "prettier --check \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" styles.css",
+    "format": "prettier --write \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" styles.css \"src/pages/**/*.css\"",
+    "format:check": "prettier --check \"**/*.html\" \"src/**/*.js\" \"scripts/**/*.mjs\" styles.css \"src/pages/**/*.css\"",
     "build": "npm run build:js && npm run build:html && npm run format",
     "test": "node --test scripts/lib/*.test.mjs",
-    "lint:css": "stylelint styles.css"
+    "lint:css": "stylelint styles.css \"src/pages/**/*.css\""
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
     "html-minifier-terser": "^7.2.0",
+    "playwright-core": "1.63.0",
     "prettier": "^3.3.3",
     "stylelint": "^17.15.0",
     "stylelint-config-standard": "^40.0.0",
-    "stylelint-declaration-strict-value": "^1.12.1"
+    "stylelint-declaration-strict-value": "^1.12.1",
+    "unpdf": "^1.8.1"
   },
   "engines": {
     "node": ">=24"

@@ -1,0 +1,36 @@
+{
+  "outputPath": "resume/index.html",
+  "stylesheet": "resume.css",
+  "renderer": "resume",
+  "meta": {
+    "title": "Resume | David Dangerfield, Senior / Staff Frontend Engineer",
+    "description": "David Dangerfield's resume: Senior / Staff Frontend Engineer, full-stack, 20+ years across consumer products, health, payments, CleanTech, and enterprise software.",
+    "canonical": "https://daviddangerfield.com/resume/",
+    "og": {
+      "title": "David Dangerfield Resume",
+      "description": "Senior / Staff Frontend Engineer | Full-Stack | 20+ Years",
+      "type": "profile",
+      "url": "https://daviddangerfield.com/resume/",
+      "siteName": "David Dangerfield",
+      "image": {
+        "url": "https://daviddangerfield.com/images/social/resume-share.png",
+        "type": "image/png",
+        "width": "1200",
+        "height": "630",
+        "alt": "Resume preview for David Dangerfield"
+      }
+    },
+    "twitter": {
+      "card": "summary_large_image",
+      "title": "David Dangerfield Resume",
+      "description": "Senior / Staff Frontend Engineer | Full-Stack | 20+ Years",
+      "image": "https://daviddangerfield.com/images/social/resume-share.png",
+      "imageAlt": "Resume preview for David Dangerfield"
+    }
+  },
+  "footer": {
+    "scheduleHref": "/contact/",
+    "scheduleTarget": null,
+    "scheduleRel": null
+  }
+}
