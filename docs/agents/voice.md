@@ -4,7 +4,7 @@ Site copy should sound like David wrote it and promise only what he can back up 
 
 ## Steps
 
-1. **Gather facts.** Pull every claim, number, title, and date from the resume (`src/pages/resume/content.html`, printed as `Resume-David-Dangerfield.pdf`), his LinkedIn profile, `career-history.md` in his personal-history repo, or something David confirmed in writing. Other private notes are for learning his style, not for facts, unless he approves a specific fact.
+1. **Gather facts.** Pull every claim, number, title, and date from the resume (`src/pages/resume/resume.json`, printed as `Resume-David-Dangerfield.pdf`), his LinkedIn profile, `career-history.md` in his personal-history repo, or something David confirmed in writing. Other private notes are for learning his style, not for facts, unless he approves a specific fact.
 2. **Draft in his voice** (see Voice).
 3. **Shape it for a skim** (see Structure).
 4. **Check it.** Done means all of these are true:

@@ -14,6 +14,7 @@ import { minify as minifyHtml } from 'html-minifier-terser'
 import { discoverPages } from './lib/routes.mjs'
 import { missingRequiredFields } from './lib/meta-schema.mjs'
 import { STATIC_ASSET_PATHS, HOST_CONFIG_FILES } from './lib/static-assets.mjs'
+import { renderResumePage } from './lib/resume-html.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -121,6 +122,19 @@ function buildFooterScheduleLink(footer) {
   return `<a href="${footer.scheduleHref}"${targetAttr}${relAttr}>Schedule</a>`
 }
 
+// meta.json "renderer": fills {{PLACEHOLDERS}} in a page's content.html with
+// HTML generated from data in the page folder.
+const PAGE_RENDERERS = {
+  resume: renderResumePage,
+}
+
+async function readPageContent(pageId, pageDir, renderer) {
+  const content = await readFile(join(pageDir, 'content.html'), 'utf8')
+  if (!renderer) return content
+  if (!PAGE_RENDERERS[renderer]) throw new Error(`${pageId}: unknown renderer "${renderer}"`)
+  return interpolate(content, await PAGE_RENDERERS[renderer](pageDir))
+}
+
 // script.js is cached as immutable (cloudflare/_headers), so its URL carries a
 // hash of its content: deterministic across machines and never forgotten. The
 // resume PDF's links are versioned the same way.
@@ -194,7 +208,7 @@ export async function build({ minify = true } = {}) {
 
   for (const { pageId, pageDir, meta: page } of discovered) {
     const pageContent = injectVersionedResumeLinks(
-      await readFile(join(pageDir, 'content.html'), 'utf8'),
+      await readPageContent(pageId, pageDir, page.renderer),
       resumeUrl,
     )
 

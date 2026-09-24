@@ -1,0 +1,464 @@
+{
+  "$schema": "./resume.schema.json",
+  "name": "David Dangerfield",
+  "headline": [
+    "Senior / Staff Frontend Engineer",
+    "Full-Stack",
+    "20+ Years"
+  ],
+  "industries": [
+    "Consumer Products",
+    "Health",
+    "Payments",
+    "CleanTech",
+    "Enterprise Software"
+  ],
+  "contact": {
+    "location": "Minneapolis, MN",
+    "links": [
+      {
+        "label": "linkedin.com/in/dangerfield",
+        "url": "https://www.linkedin.com/in/dangerfield"
+      },
+      {
+        "label": "daviddangerfield.com",
+        "url": "https://daviddangerfield.com"
+      }
+    ]
+  },
+  "summary": "Software Engineer with 20+ years across frontend architecture and backend systems, most recently 8+ years in frontend lead roles. I've led frontend rewrites and contributed to shared component libraries used across dozens of repos, run data-driven conversion experiments, and written backend service and API code. I've shifted my workflow to agentic AI tools (Copilot, Claude) to ship faster without sacrificing quality. Track record includes FDA-regulated healthcare platforms, a multi-billion-dollar payments revenue stream, and products used by millions. I mentor and build community as much as I ship code, having led migration planning and code reviews for junior teams and co-founded a 30-person internal frontend community at IBM. MS in Computer Science, Purdue.",
+  "availability": "Available now for full-time senior or staff roles, frontend or full-stack.",
+  "skills": [
+    {
+      "id": "languages",
+      "label": "Languages",
+      "items": [
+        "TypeScript",
+        "JavaScript",
+        "Java",
+        "C#"
+      ]
+    },
+    {
+      "id": "backend",
+      "label": "Backend & Frameworks",
+      "items": [
+        "REST APIs",
+        "Node.js",
+        "Spring",
+        "Legacy Modernization",
+        "Microservices",
+        "Message Queues",
+        "Stripe"
+      ]
+    },
+    {
+      "id": "data",
+      "label": "State Mgmt & Data Stores",
+      "items": [
+        "TanStack",
+        "Pinia",
+        "Redux",
+        "SQL",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "id": "cloud",
+      "label": "Cloud & Infrastructure",
+      "items": [
+        "AWS",
+        "GitHub Actions",
+        "Azure DevOps",
+        "DataDog"
+      ]
+    },
+    {
+      "id": "ai-testing",
+      "label": "AI & Testing Tools",
+      "items": [
+        "Copilot",
+        "Claude",
+        "Playwright",
+        "Cypress",
+        "Jest",
+        "JUnit",
+        "Vitest"
+      ]
+    },
+    {
+      "id": "frontend",
+      "label": "Frontend",
+      "items": [
+        "Vue.js",
+        "React",
+        "Next.js",
+        "GraphQL",
+        "Angular",
+        "Tailwind",
+        "ECharts",
+        "a11y",
+        "i18n",
+        "Design Systems",
+        "Component Libraries"
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "patterson",
+      "title": "Principal Software Engineer",
+      "engagement": "Contractor",
+      "employer": "Patterson Companies",
+      "location": "Remote",
+      "start": "2025-03",
+      "end": "2026-08",
+      "bullets": [
+        {
+          "id": "patterson-led-frontend-architecture",
+          "lead": "Led frontend architecture",
+          "text": "Led frontend architecture for a B2B client portal with associated admin experience, consolidating duplicated UI and Vue.js routing into a shared repository with Storybook and mock data"
+        },
+        {
+          "id": "patterson-designed-an-app-launch",
+          "lead": "Designed an app launch pattern",
+          "text": "Designed an app launch pattern enabling decoupled app initialization while preserving shared code"
+        },
+        {
+          "id": "patterson-upgraded-a-multibilliondollar-revenue",
+          "lead": "Upgraded a multibillion-dollar revenue stream",
+          "text": "Upgraded a multibillion-dollar revenue stream by rewriting legacy desktop-only Angular.js bill-pay frontend into a responsive, locale-aware Vue.js/TypeScript/TanStack architecture"
+        },
+        {
+          "id": "patterson-transitioned-into-agentic-ai",
+          "lead": "Transitioned into agentic AI development",
+          "text": "Transitioned into agentic AI development to improve my dev efficiency and software quality"
+        },
+        {
+          "id": "patterson-engineered-a-reusable-ui",
+          "lead": "Engineered a reusable UI component library",
+          "text": "Engineered a reusable UI component library from Figma designs, integrating Vue.js with a .NET/C# controller backend and mapping SAP responses to user feedback"
+        },
+        {
+          "id": "patterson-built-a-localized-customer",
+          "lead": "Built a localized Customer Reports experience",
+          "text": "Built a localized Customer Reports experience integrating embedded Power BI reports across e-commerce sites, including the supporting UI and integration architecture"
+        },
+        {
+          "id": "patterson-spearheaded-multirepo-infrastructure-modernizations",
+          "lead": "Spearheaded multi-repo infrastructure modernizations",
+          "text": "Spearheaded multi-repo infrastructure modernizations, including a frontend linting upgrade and an org-wide JFrog Artifactory migration, each across 20+ repositories"
+        }
+      ],
+      "tech": [
+        "Copilot",
+        "Claude",
+        "Node.js",
+        "TypeScript",
+        "Vue.js",
+        "Microfrontends",
+        "Microservices",
+        "Azure DevOps",
+        "JFrog",
+        "i18n"
+      ]
+    },
+    {
+      "id": "life-time",
+      "title": "Lead Software Developer",
+      "engagement": "Contractor",
+      "employer": "Life Time",
+      "location": "Remote",
+      "start": "2022-07",
+      "end": "2025-03",
+      "bullets": [
+        {
+          "id": "life-time-led-frontend-development",
+          "lead": "Led frontend development",
+          "text": "Led frontend development for the Account team, digitizing the member guest pass experience to support hundreds of thousands of new accounts and app installs"
+        },
+        {
+          "id": "life-time-architected-frontend-error-reporting",
+          "lead": "Architected frontend error reporting",
+          "text": "Architected frontend error reporting using DataDog, giving leaders visibility into user-facing issues"
+        },
+        {
+          "id": "life-time-spearheaded-vue-3-implementation",
+          "lead": "Spearheaded Vue 3 implementation",
+          "text": "Spearheaded Vue 3 implementation for \"Find A Location\" featuring custom Google Maps integration"
+        }
+      ],
+      "tech": [
+        "GitHub Copilot",
+        "TypeScript",
+        "Vue.js",
+        "DataDog",
+        "Vite",
+        "Vitest",
+        "Playwright",
+        "Legacy Modernization",
+        "App Integration"
+      ]
+    },
+    {
+      "id": "nurocor",
+      "title": "Senior Software Engineer",
+      "engagement": "Concurrent Part-Time Contractor",
+      "employer": "Nurocor",
+      "location": "Remote",
+      "start": "2018-02",
+      "end": "2024-03",
+      "bullets": [
+        {
+          "id": "nurocor-architected-compliant-ui-workflows",
+          "lead": "Architected compliant UI workflows",
+          "text": "Architected compliant UI workflows for a structured authoring platform for FDA clinical trial documentation, supporting document templates, formal reviews, and complete audit trails"
+        },
+        {
+          "id": "nurocor-delivered-awardwinning-frontend-engineering",
+          "lead": "Delivered award-winning frontend engineering",
+          "text": "Delivered award-winning frontend engineering for a protocol authoring platform recognized as \"Best Integrated Protocol Authoring and Review Solution\" by TransCelerate BioPharma"
+        }
+      ],
+      "tech": [
+        "Vue.js",
+        "Nuxt.js",
+        "Storybook",
+        "GraphQL",
+        "Component Libraries"
+      ]
+    },
+    {
+      "id": "nextera",
+      "title": "Principal Software Engineer Consultant",
+      "engagement": "Contractor",
+      "employer": "NextEra Analytics",
+      "location": "Remote",
+      "start": "2021-01",
+      "end": "2022-07",
+      "bullets": [
+        {
+          "id": "nextera-developed-omni-project-uis",
+          "lead": "Developed \"OMNI\" project UIs",
+          "text": "Developed \"OMNI\" project UIs featuring geospatial maps, diagrams, and dense financial data grids"
+        },
+        {
+          "id": "nextera-introduced-apache-echarts-to",
+          "lead": "Introduced Apache ECharts to unlock",
+          "text": "Introduced Apache ECharts to unlock a broad library of interactive, animated visualizations not previously practical to build in-house, enabling new product and data analytics charts"
+        },
+        {
+          "id": "nextera-engineered-an-angularbased-ipad",
+          "lead": "Engineered an Angular-based iPad app",
+          "text": "Engineered an Angular-based iPad app via web views to streamline wind-site worker scheduling"
+        }
+      ],
+      "tech": [
+        "TypeScript",
+        "Vue.js",
+        "GraphQL",
+        "ECharts",
+        "Angular",
+        "Storybook"
+      ]
+    },
+    {
+      "id": "intricately",
+      "title": "Senior Software Consultant",
+      "engagement": "Concurrent Part-Time Contractor",
+      "employer": "Intricately",
+      "employerNote": "Acq. by HG Insights",
+      "location": "Remote",
+      "start": "2020-09",
+      "end": "2022-02",
+      "bullets": [
+        {
+          "id": "intricately-engaged-directly-by-cto",
+          "lead": "Engaged directly by CTO",
+          "text": "Engaged directly by CTO as a frontend expert to provide technical oversight and establish best practices across a more junior international team"
+        },
+        {
+          "id": "intricately-mentored-developers-and-built",
+          "lead": "Mentored developers and built trust",
+          "text": "Mentored developers and built trust through code reviews and Vue 2 to Vue 3 migration plans"
+        }
+      ],
+      "tech": [
+        "TypeScript",
+        "Vue.js",
+        "Node.js"
+      ]
+    },
+    {
+      "id": "smugmug",
+      "title": "Senior Software Engineer",
+      "employer": "SmugMug",
+      "location": "Remote",
+      "start": "2018-09",
+      "end": "2021-01",
+      "bullets": [
+        {
+          "id": "smugmug-migrated-legacy-payments-code",
+          "lead": "Migrated legacy payments code",
+          "text": "Migrated legacy payments code to Stripe, ensuring a locale-aware UI across 10 global currencies"
+        },
+        {
+          "id": "smugmug-engineered-responsive-trialtosubscriber-conversion",
+          "lead": "Engineered responsive trial-to-subscriber conversion flows",
+          "text": "Engineered responsive trial-to-subscriber conversion flows supporting dynamic promotions"
+        },
+        {
+          "id": "smugmug-implemented-datadriven-conversion-a",
+          "lead": "Implemented data-driven conversion A/B testing",
+          "text": "Implemented data-driven conversion A/B testing via LaunchDarkly, integrating detailed tracking analytics and user feedback mechanisms, collaborating closely with product, UX, and design"
+        }
+      ],
+      "tech": [
+        "AWS",
+        "Node.js",
+        "JavaScript",
+        "Next.js",
+        "React",
+        "Tailwind",
+        "GraphQL",
+        "Continuous Deployment",
+        "a11y",
+        "i18n"
+      ]
+    },
+    {
+      "id": "ibm-watson-health",
+      "title": "Advisory Software Engineer with Watson Health & IBM Services",
+      "employer": "IBM",
+      "location": "Rochester, MN",
+      "start": "2015-11",
+      "end": "2018-08",
+      "bullets": [
+        {
+          "id": "ibm-watson-health-led-frontend-engineering",
+          "lead": "Led frontend engineering",
+          "text": "Led frontend engineering for Watson for Drug Discovery (Pfizer), iterating with UX on complex D3.js visualizations to translate 25M+ abstracts and 4M+ patent records into actionable insights"
+        },
+        {
+          "id": "ibm-watson-health-built-vuejs-application",
+          "lead": "Built Vue.js application",
+          "text": "Built Vue.js application for \"Project DOC,\" a $3M funded clinical decision support application deployed at Su Clinica Familiar to optimize regional diabetes treatment models"
+        },
+        {
+          "id": "ibm-watson-health-served-as-sole-ui",
+          "lead": "Served as sole UI developer",
+          "text": "Served as sole UI developer for a custom Vue.js app for call center staff at a major regional U.S. bank; delivered in under 2 months, with time onsite in Alabama, enabling NLP-ingested document search"
+        },
+        {
+          "id": "ibm-watson-health-cofounded-fedibm-rochester",
+          "lead": "Co-founded FED@IBM Rochester",
+          "text": "Co-founded FED@IBM Rochester, an internal frontend developer community of 30+ engineers hosting twice-monthly sessions on JavaScript, accessibility, UI automation testing, and tooling"
+        }
+      ],
+      "tech": [
+        "IBM Bluemix (Cloud)",
+        "Vue.js",
+        "Angular",
+        "React",
+        "JavaScript",
+        "i18n",
+        "D3.js",
+        "Mobile Web App",
+        "Legacy Modernization",
+        "a11y"
+      ]
+    },
+    {
+      "id": "preventice",
+      "title": "Senior Web Application Developer",
+      "employer": "Preventice Solutions",
+      "employerNote": "now Boston Scientific",
+      "location": "Rochester, MN",
+      "start": "2013-08",
+      "end": "2015-10",
+      "bullets": [
+        {
+          "id": "preventice-built-fullstack-infrastructure",
+          "lead": "Built full-stack infrastructure",
+          "text": "Built full-stack infrastructure for BodyGuardian, an FDA 510(k)-cleared ambulatory cardiac monitoring platform incorporating Mayo Clinic licensed remote monitoring technology"
+        },
+        {
+          "id": "preventice-engineered-an-activemq-message",
+          "lead": "Engineered an ActiveMQ message broker pipeline",
+          "text": "Engineered an ActiveMQ message broker pipeline for the Notification Service to batch and deliver structured ambulatory telemetry reports to clinical review teams in a fault-tolerant manner"
+        },
+        {
+          "id": "preventice-built-java-web-services",
+          "lead": "Built Java web services",
+          "text": "Built Java web services for patient compliance app with integration test suite and code coverage"
+        },
+        {
+          "id": "preventice-implemented-claimsbased-saml-authentication",
+          "lead": "Implemented claims-based (SAML) authentication flows",
+          "text": "Implemented claims-based (SAML) authentication flows for the multi-tenant Preventice Care Platform, including multi-role user sessions, ensuring appropriate HIPAA-compliant access controls"
+        }
+      ],
+      "tech": [
+        "Java",
+        "Spring",
+        "JavaScript",
+        "C#",
+        "REST APIs",
+        "ActiveMQ",
+        "SAML SSO",
+        "ASP.NET",
+        "SQL Server",
+        "Angular"
+      ]
+    },
+    {
+      "id": "ibm-rochester",
+      "title": "Software Engineer → Team Lead → Test Architect",
+      "employer": "IBM",
+      "location": "Rochester, MN",
+      "start": "2002-05",
+      "end": "2013-08",
+      "bullets": [
+        {
+          "id": "ibm-rochester-ported-ibm-directory-server",
+          "lead": "Ported IBM Directory Server (LDAP)",
+          "text": "Ported IBM Directory Server (LDAP) to IBM i, a commercially shipped enterprise product"
+        },
+        {
+          "id": "ibm-rochester-codesigned-test-strategy",
+          "lead": "Co-designed test strategy",
+          "text": "Co-designed test strategy and tool ecosystem for Blue Business Platform, a new product line, leading engineering teams in Beijing to run product validation across multiple simultaneous releases"
+        },
+        {
+          "id": "ibm-rochester-automated-software-update-packaging",
+          "lead": "Automated software update packaging",
+          "text": "Automated software update packaging, eliminating 500+ person-hours annually and enabling self-service builds across teams"
+        }
+      ],
+      "tech": [
+        "C++",
+        "LDAP",
+        "REST APIs",
+        "Java",
+        "JavaScript",
+        "Perl",
+        "IBM Db2",
+        "i18n"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in Computer Science",
+      "school": "Purdue University",
+      "location": "West Lafayette, IN",
+      "year": 2002
+    },
+    {
+      "degree": "Bachelor of Science in Computer Science",
+      "school": "Brigham Young University",
+      "location": "Provo, UT",
+      "year": 2000
+    }
+  ]
+}

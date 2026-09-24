@@ -28,7 +28,7 @@ Writing or editing any visitor-facing text (page content, meta tags, social card
 
 ### Resume
 
-`src/pages/resume/` is the resume's source; `Resume-David-Dangerfield.pdf` is printed from it. After editing it, run `npm run update:resume` and leave the PDF for David to review before anything is committed. See the README, **Updating the Resume**.
+`src/pages/resume/resume.json` is the resume's content, shaped by `resume.schema.json`; `Resume-David-Dangerfield.pdf` is printed from it. After editing it, run `npm run update:resume` and leave the PDF for David to review before anything is committed. See the README, **Updating the Resume**.
 
 ### Domain docs
 

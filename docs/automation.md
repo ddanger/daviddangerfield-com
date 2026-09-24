@@ -100,7 +100,7 @@ If your ruleset does not allow GitHub Actions as a bypass actor, add `Repository
 
 The PDF is printed from the `/resume/` page on your machine, never in CI. See **Updating the Resume** in the README. Before pushing:
 
-- [ ] Edit `src/pages/resume/`
+- [ ] Edit `src/pages/resume/resume.json` (content) or `resume.css` (layout)
 - [ ] Run `npm run update:resume` (it fails if the PDF isn't two pages or its text doesn't match the page)
 - [ ] Review `Resume-David-Dangerfield.pdf` and `images/social/resume-share.png`
 - [ ] `git add src/pages/resume Resume-David-Dangerfield.pdf images/social/resume-share.png src/site.json`

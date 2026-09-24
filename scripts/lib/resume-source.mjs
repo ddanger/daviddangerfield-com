@@ -9,6 +9,7 @@ export const RESUME_ROUTE = '/resume/'
 // resume.css overrides what the sheet uses from it, and including it would
 // demand a PDF rebuild for every site style change.
 const SOURCE_DIRS = ['src/pages/resume', 'fonts/resume']
+const SOURCE_FILES = ['scripts/lib/resume-html.mjs']
 
 const BINARY_EXTENSIONS = new Set(['.woff2'])
 
@@ -17,7 +18,7 @@ const BINARY_EXTENSIONS = new Set(['.woff2'])
 // the page. Line endings are normalized so a checkout's autocrlf can't change
 // it.
 export async function hashResumeSource(rootDir) {
-  const files = []
+  const files = SOURCE_FILES.map((file) => join(rootDir, file))
   for (const dir of SOURCE_DIRS) {
     const entries = await readdir(join(rootDir, dir), { recursive: true, withFileTypes: true })
     for (const entry of entries) {

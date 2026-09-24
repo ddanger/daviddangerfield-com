@@ -47,6 +47,7 @@ Use these files for normal edits:
 - `src/site.json` - shared site configuration
 - `src/pages/*/meta.json` - page metadata and output paths
 - `src/pages/*/content.html` - page body content
+- `src/pages/*/meta.json` `"renderer"` - optional: fills `{{PLACEHOLDERS}}` in that page's `content.html` from data in its folder (see `PAGE_RENDERERS` in `scripts/build.mjs`)
 - `src/pages/*/*.css` - optional page-only styles, named by `stylesheet` in that page's `meta.json` and inlined after `styles.css`
 - `src/partials/*.html` - shared layout, header, and footer
 - `src/client/` - source JavaScript modules (bundled into `dist/script.js`)
@@ -121,7 +122,7 @@ npm run check:uptime
 
 ## Updating the Resume
 
-The resume's source of truth is the `/resume/` page: `src/pages/resume/content.html` and its print styles in `resume.css`. `Resume-David-Dangerfield.pdf` is printed from that page, on this machine, and committed after review. Nothing builds it in CI or on deploy.
+The resume's source of truth is `src/pages/resume/resume.json`: jobs, bullets, and skills as data, shaped by `resume.schema.json` (editors validate against it). `scripts/lib/resume-html.mjs` renders it into the `/resume/` page, and `resume.css` holds its screen and print styles. `Resume-David-Dangerfield.pdf` is printed from that page, on this machine, and committed after review. Nothing builds it in CI or on deploy.
 
 After editing the resume page:
 

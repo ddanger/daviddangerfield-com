@@ -68,6 +68,30 @@
       <li>Decisions a future reader might question are written down as short decision records.</li>
     </ul>
 
+    <h2>The resume is built from data</h2>
+    <p>
+      My resume used to be a Google Docs export. Now each job, bullet, and skill is a JSON record in
+      the repo, rendered into the <a href="/resume/">resume page</a>, and the PDF is that page
+      printed by headless Chromium. I matched the Google Docs version line for line, so the only
+      thing that changed is where it comes from.
+    </p>
+    <ul>
+      <li>
+        Every PDF is checked before I see it: exactly two pages, fonts embedded in a format resume
+        parsers can read, and extracted text that matches the page word for word, in order. The
+        order check caught a first draft that listed each job's tech stack ahead of its bullets.
+      </li>
+      <li>
+        The PDF is built on my machine and committed only after I review it. CI fails if the resume
+        data changes without a rebuilt PDF, and download links carry a hash of the file, so nobody
+        gets a stale cached copy.
+      </li>
+      <li>
+        The link preview image is rendered from the resume page too, blurred on purpose so a cached
+        preview never shows details that have since changed.
+      </li>
+    </ul>
+
     <h2>Built with AI, reviewed by me</h2>
     <p>
       I build and maintain this site with AI coding agents, mostly Claude Code, plus GitHub Copilot.
