@@ -133,3 +133,7 @@ npm run update:resume
 It builds the site, prints the PDF with Playwright's pinned headless Chromium, and checks it: exactly two pages, no Type 3 fonts, and extracted text that matches the page word for word, in the page's order. It then regenerates the link preview (`images/social/resume-share.png`) and records a hash of the resume source in `src/site.json`. On macOS it opens the PDF and image for review. Commit all three together.
 
 `npm run validate:source` (run in CI) fails if the resume source changed without a rebuilt PDF. PDF links are versioned by a hash of the PDF at build time, so there's no version to bump.
+
+### Tailored versions
+
+`npm run resume:variant -- <name>` builds a version of the resume tailored to one job posting, in `applications/<name>/`. That folder is git-ignored and stays that way: variants show where David is applying. The first run copies the canonical `resume.json` there to edit; later runs print its PDF through the same template, CSS, and checks, and write `review.md`, which lists every change from the canonical resume and every line of new text to fact-check. Agents follow `docs/agents/resume-variants.md`.

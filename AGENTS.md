@@ -30,6 +30,8 @@ Writing or editing any visitor-facing text (page content, meta tags, social card
 
 `src/pages/resume/resume.json` is the resume's content, shaped by `resume.schema.json`; `Resume-David-Dangerfield.pdf` is printed from it. After editing it, run `npm run update:resume` and leave the PDF for David to review before anything is committed. See the README, **Updating the Resume**.
 
+Tailoring the resume for a job posting: follow `docs/agents/resume-variants.md`.
+
 ### Domain docs
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root (created lazily as needed). See `docs/agents/domain.md`.

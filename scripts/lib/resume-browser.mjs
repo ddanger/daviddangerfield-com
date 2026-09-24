@@ -25,19 +25,24 @@ function distFileFor(distDir, url) {
 }
 
 // Opens a dist/ route with the site served in-process and every other request
-// blocked, so output can't depend on the network.
-export async function openDistPage(browser, distDir, route, pageOptions = {}) {
+// blocked, so output can't depend on the network. `html` replaces the route's
+// document without writing it to dist/, which a resume variant must never be.
+export async function openDistPage(browser, distDir, route, { html, ...pageOptions } = {}) {
   const page = await browser.newPage(pageOptions)
-  await page.route('**/*', (route) => route.abort())
-  await page.route(`${ORIGIN}/**`, async (route) => {
-    const file = distFileFor(distDir, route.request().url())
+  await page.route('**/*', (intercept) => intercept.abort())
+  await page.route(`${ORIGIN}/**`, async (intercept) => {
+    const url = intercept.request().url()
+    if (html && new URL(url).pathname === route) {
+      return intercept.fulfill({ body: html, contentType: 'text/html; charset=utf-8' })
+    }
+    const file = distFileFor(distDir, url)
     const exists =
       file &&
       (await access(file).then(
         () => true,
         () => false,
       ))
-    return exists ? route.fulfill({ path: file }) : route.fulfill({ status: 404 })
+    return exists ? intercept.fulfill({ path: file }) : intercept.fulfill({ status: 404 })
   })
   await page.goto(`${ORIGIN}${route}`, { waitUntil: 'load' })
   await page.evaluate(() => document.fonts.ready)

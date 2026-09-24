@@ -47,9 +47,15 @@ function firstDifference(expected, actual) {
 
 // Prints dist/resume/ with the page's own print CSS, so this PDF and a
 // visitor's Print > Save as PDF come from the same rules. Throws, leaving
-// outputPath for inspection, if the result isn't something to send.
-export async function printResumePdf(browser, distDir, outputPath) {
-  const page = await openDistPage(browser, distDir, RESUME_ROUTE)
+// outputPath for inspection, if the result isn't something to send. `html`
+// prints a variant through the same page (see openDistPage).
+export async function printResumePdf(
+  browser,
+  distDir,
+  outputPath,
+  { html, expectedPages = EXPECTED_PAGES } = {},
+) {
+  const page = await openDistPage(browser, distDir, RESUME_ROUTE, { html })
   await page.emulateMedia({ media: 'print' })
   const pageText = await page.locator('.resume').innerText()
   await page.pdf({ path: outputPath, preferCSSPageSize: true, printBackground: true, tagged: true })
@@ -59,9 +65,9 @@ export async function printResumePdf(browser, distDir, outputPath) {
   const pdf = await getDocumentProxy(new Uint8Array(bytes))
   const problems = []
 
-  if (pdf.numPages !== EXPECTED_PAGES) {
+  if (pdf.numPages !== expectedPages) {
     problems.push(
-      `${pdf.numPages} pages, expected ${EXPECTED_PAGES}. Tighten the content or the spacing tokens in src/pages/resume/resume.css.`,
+      `${pdf.numPages} pages, expected ${expectedPages}. Tighten the content or the spacing tokens in src/pages/resume/resume.css.`,
     )
   }
 
