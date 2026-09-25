@@ -15,6 +15,7 @@ import { discoverPages } from './lib/routes.mjs'
 import { missingRequiredFields } from './lib/meta-schema.mjs'
 import { STATIC_ASSET_PATHS, HOST_CONFIG_FILES } from './lib/static-assets.mjs'
 import { renderResumePage } from './lib/resume-html.mjs'
+import { html } from './lib/html.mjs'
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = join(SCRIPTS_DIR, '..')
@@ -44,82 +45,97 @@ function interpolate(template, vars) {
 function buildHeadContent(page, site, stylesCss) {
   const lines = []
 
-  lines.push(`  <meta charset="UTF-8" />`)
-  lines.push(`  <meta name="viewport" content="width=device-width, initial-scale=1" />`)
-  lines.push(`  <title>${page.meta.title}</title>`)
-  lines.push(`  <meta name="description" content="${page.meta.description}" />`)
+  lines.push(`<meta charset="UTF-8" />`)
+  lines.push(`<meta name="viewport" content="width=device-width, initial-scale=1" />`)
+  lines.push(html`<title>${page.meta.title}</title>`)
+  lines.push(html`<meta name="description" content="${page.meta.description}" />`)
 
   // No analytics or tracking scripts: see docs/adr/0001-performance-over-user-tracking.md.
 
   if (page.meta.keywords) {
-    lines.push(`  <meta name="keywords" content="${page.meta.keywords}" />`)
+    lines.push(html`<meta name="keywords" content="${page.meta.keywords}" />`)
   }
 
   if (page.meta.robots) {
-    lines.push(`  <meta name="robots" content="${page.meta.robots}" />`)
+    lines.push(html`<meta name="robots" content="${page.meta.robots}" />`)
   }
 
-  lines.push(`  <meta property="og:title" content="${page.meta.og.title}" />`)
-  lines.push(`  <meta property="og:description" content="${page.meta.og.description}" />`)
-  lines.push(`  <meta property="og:type" content="${page.meta.og.type}" />`)
-  lines.push(`  <meta property="og:url" content="${page.meta.og.url}" />`)
+  lines.push(html`<meta property="og:title" content="${page.meta.og.title}" />`)
+  lines.push(html`<meta property="og:description" content="${page.meta.og.description}" />`)
+  lines.push(html`<meta property="og:type" content="${page.meta.og.type}" />`)
+  lines.push(html`<meta property="og:url" content="${page.meta.og.url}" />`)
 
   if (page.meta.og.siteName) {
-    lines.push(`  <meta property="og:site_name" content="${page.meta.og.siteName}" />`)
+    lines.push(html`<meta property="og:site_name" content="${page.meta.og.siteName}" />`)
   }
 
   if (page.meta.og.image) {
     const img = page.meta.og.image
-    lines.push(`  <meta property="og:image" content="${img.url}" />`)
-    lines.push(`  <meta property="og:image:secure_url" content="${img.url}" />`)
-    lines.push(`  <meta property="og:image:type" content="${img.type}" />`)
-    lines.push(`  <meta property="og:image:width" content="${img.width}" />`)
-    lines.push(`  <meta property="og:image:height" content="${img.height}" />`)
-    lines.push(`  <meta property="og:image:alt" content="${img.alt}" />`)
+    lines.push(html`<meta property="og:image" content="${img.url}" />`)
+    lines.push(html`<meta property="og:image:secure_url" content="${img.url}" />`)
+    lines.push(html`<meta property="og:image:type" content="${img.type}" />`)
+    lines.push(html`<meta property="og:image:width" content="${img.width}" />`)
+    lines.push(html`<meta property="og:image:height" content="${img.height}" />`)
+    lines.push(html`<meta property="og:image:alt" content="${img.alt}" />`)
   }
 
   if (page.meta.twitter) {
     const tw = page.meta.twitter
-    lines.push(`  <meta name="twitter:card" content="${tw.card}" />`)
-    lines.push(`  <meta name="twitter:title" content="${tw.title}" />`)
-    lines.push(`  <meta name="twitter:description" content="${tw.description}" />`)
-    lines.push(`  <meta name="twitter:image" content="${tw.image}" />`)
-    lines.push(`  <meta name="twitter:image:alt" content="${tw.imageAlt}" />`)
+    lines.push(html`<meta name="twitter:card" content="${tw.card}" />`)
+    lines.push(html`<meta name="twitter:title" content="${tw.title}" />`)
+    lines.push(html`<meta name="twitter:description" content="${tw.description}" />`)
+    lines.push(html`<meta name="twitter:image" content="${tw.image}" />`)
+    lines.push(html`<meta name="twitter:image:alt" content="${tw.imageAlt}" />`)
   }
 
-  lines.push(`  <meta name="theme-color" content="${site.themeColor}" />`)
-  lines.push(`  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />`)
-  lines.push(`  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />`)
-  lines.push(`  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />`)
-  lines.push(`  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />`)
-  lines.push(`  <link rel="manifest" href="/site.webmanifest" />`)
-  lines.push(`  <link rel="canonical" href="${page.meta.canonical}" />`)
+  lines.push(html`<meta name="theme-color" content="${site.themeColor}" />`)
+  lines.push(`<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />`)
+  lines.push(`<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />`)
+  lines.push(`<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />`)
+  lines.push(`<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />`)
+  lines.push(`<link rel="manifest" href="/site.webmanifest" />`)
+  lines.push(html`<link rel="canonical" href="${page.meta.canonical}" />`)
   lines.push(
-    `  <link rel="preload" href="/fonts/fraunces-latin-700.woff2" as="font" type="font/woff2" crossorigin />`,
+    `<link rel="preload" href="/fonts/fraunces-latin-700.woff2" as="font" type="font/woff2" crossorigin />`,
   )
   lines.push(
-    `  <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />`,
+    `<link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />`,
   )
   // CSS is inlined to avoid a render-blocking request. Escape any </style> in
   // it so the inlined block can't close early.
   const safeCss = stylesCss.replace(/<\/style/gi, '<\\/style')
-  lines.push(`  <style>`)
+  lines.push(`<style>`)
   lines.push(safeCss)
-  lines.push(`  </style>`)
+  lines.push(`</style>`)
 
+  // Escape < so a string in the data can't close the script element.
   if (page.schemaJson) {
-    lines.push(`  <script type="application/ld+json">`)
-    lines.push(JSON.stringify(page.schemaJson))
-    lines.push(`  </script>`)
+    lines.push(`<script type="application/ld+json">`)
+    lines.push(JSON.stringify(page.schemaJson).replaceAll('<', '\\u003c'))
+    lines.push(`</script>`)
   }
 
   return lines.join('\n')
 }
 
 function buildFooterScheduleLink(footer) {
-  const targetAttr = footer.scheduleTarget ? ` target="${footer.scheduleTarget}"` : ''
-  const relAttr = footer.scheduleRel ? ` rel="${footer.scheduleRel}"` : ''
-  return `<a href="${footer.scheduleHref}"${targetAttr}${relAttr}>Schedule</a>`
+  const targetAttr = footer.scheduleTarget ? html` target="${footer.scheduleTarget}"` : ''
+  const relAttr = footer.scheduleRel ? html` rel="${footer.scheduleRel}"` : ''
+  // Prettier formats html`` as HTML and would put a space before ${targetAttr}.
+  // prettier-ignore
+  return String(html`<a href="${footer.scheduleHref}"${targetAttr}${relAttr}>Schedule</a>`)
+}
+
+// Only links inside <nav>: the brand link also points to /. A section link
+// stays current on its subpages (Work on /work/patterson/), Home only on /.
+function markCurrentNavLink(header, route) {
+  return header.replace(/<nav[\s\S]*?<\/nav>/, (nav) =>
+    nav.replace(/<a href="([^"]+)"/g, (tag, href) =>
+      href === route || (href !== '/' && route.startsWith(href))
+        ? `${tag} aria-current="page"`
+        : tag,
+    ),
+  )
 }
 
 // meta.json "renderer": fills {{PLACEHOLDERS}} in a page's content.html with
@@ -154,10 +170,10 @@ const HTML_MINIFY_OPTIONS = {
   collapseBooleanAttributes: true,
 }
 
-async function writeGenerated(outputPath, html, minify) {
+async function writeGenerated(outputPath, pageHtml, minify) {
   const fullPath = join(DIST_DIR, outputPath)
   await mkdir(dirname(fullPath), { recursive: true })
-  const output = minify ? await minifyHtml(html, HTML_MINIFY_OPTIONS) : html
+  const output = minify ? await minifyHtml(pageHtml, HTML_MINIFY_OPTIONS) : pageHtml
   await writeFile(fullPath, output, 'utf8')
   console.log(`  ✓ dist/${outputPath}`)
 }
@@ -206,7 +222,7 @@ export async function build({ minify = true } = {}) {
 
   const written = []
 
-  for (const { pageId, pageDir, meta: page } of discovered) {
+  for (const { pageId, pageDir, meta: page, route } of discovered) {
     const pageContent = injectVersionedResumeLinks(
       await readPageContent(pageId, pageDir, page.renderer),
       resumeUrl,
@@ -222,15 +238,15 @@ export async function build({ minify = true } = {}) {
       FOOTER_SCHEDULE_LINK: buildFooterScheduleLink(page.footer),
     })
 
-    const html = interpolate(layout, {
+    const pageHtml = interpolate(layout, {
       HEAD_CONTENT: headContent,
-      HEADER: headerPartial,
+      HEADER: markCurrentNavLink(headerPartial, route),
       PAGE_CONTENT: pageContent,
       FOOTER: footer,
       SCRIPT_VERSION: scriptVersion,
     })
 
-    await writeGenerated(page.outputPath, html, minify)
+    await writeGenerated(page.outputPath, pageHtml, minify)
     written.push(page.outputPath)
   }
 
