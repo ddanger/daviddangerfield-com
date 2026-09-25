@@ -14,6 +14,11 @@ on:
 permissions:
   contents: write
 
+# Runs overlap when pushes land close together; queue them so each starts from the previous run's commit.
+concurrency:
+  group: sitemap-auto
+  cancel-in-progress: false
+
 jobs:
   sitemap:
     name: Generate Sitemap
@@ -22,6 +27,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          # Latest main, not the triggering SHA, so a queued run sees the sitemap commit an earlier run pushed.
+          ref: main
           fetch-depth: 0
           persist-credentials: false
 
