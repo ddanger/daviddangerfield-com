@@ -1,0 +1,19 @@
+{
+  "outputPath": "work/lifetime/index.html",
+  "meta": {
+    "title": "Case Study: Find a Location and the Digital Guest Pass at Life Time | David Dangerfield",
+    "description": "Building Life Time's first Vue 3 page, then leading frontend on the Account team and writing the sign-up flow behind the digital guest pass.",
+    "canonical": "https://daviddangerfield.com/work/lifetime/",
+    "og": {
+      "title": "Case Study: Find a Location and the Digital Guest Pass at Life Time",
+      "description": "Building Life Time's first Vue 3 page, then leading frontend on the Account team and writing the sign-up flow behind the digital guest pass.",
+      "type": "article",
+      "url": "https://daviddangerfield.com/work/lifetime/"
+    }
+  },
+  "footer": {
+    "scheduleHref": "/contact/",
+    "scheduleTarget": null,
+    "scheduleRel": null
+  }
+}

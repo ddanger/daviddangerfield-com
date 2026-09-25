@@ -1,0 +1,19 @@
+{
+  "outputPath": "work/index.html",
+  "meta": {
+    "title": "Case Studies | David Dangerfield, Senior / Staff Frontend Engineer",
+    "description": "Two recent projects in detail: bill pay and a partner portal at Patterson Companies, and Find a Location and the digital guest pass at Life Time.",
+    "canonical": "https://daviddangerfield.com/work/",
+    "og": {
+      "title": "Case Studies | David Dangerfield, Senior / Staff Frontend Engineer",
+      "description": "Two recent projects in detail: bill pay and a partner portal at Patterson Companies, and Find a Location and the digital guest pass at Life Time.",
+      "type": "website",
+      "url": "https://daviddangerfield.com/work/"
+    }
+  },
+  "footer": {
+    "scheduleHref": "/contact/",
+    "scheduleTarget": null,
+    "scheduleRel": null
+  }
+}

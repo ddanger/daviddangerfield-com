@@ -1,0 +1,298 @@
+<section class="section hero">
+  <div class="container prose">
+    <p class="kicker">Case study · Life Time · 2022 to 2025</p>
+    <h1>Life Time's first Vue 3 page, then the sign-up flow behind the digital guest pass</h1>
+    <p class="lead">
+      I started by rewriting Find a Location, the page people use to find a club, as the first Vue 3
+      code on Life Time's public website. Then I led frontend on the Account team, where I wrote the
+      web code behind the digital guest pass and handled sign-ups for hundreds of thousands of new
+      accounts.
+    </p>
+    <dl class="facts">
+      <div>
+        <dt>Role</dt>
+        <dd>Principal Software Engineer (contractor)</dd>
+      </div>
+      <div>
+        <dt>Team</dt>
+        <dd>
+          On the Account team, me leading frontend, a junior frontend engineer, a senior backend
+          developer, a PM, and QA
+        </dd>
+      </div>
+      <div>
+        <dt>Stack</dt>
+        <dd>Vue 3, Vue 2, TypeScript, Pinia, Google Maps, Vitest, Playwright, Datadog</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container prose">
+    <h2>Find a Location, rebuilt in Vue 3</h2>
+    <p>
+      The old page was jQuery. The project had three goals: retire the jQuery code, move to a new
+      and very different visual design, and work well on phones. The organization had already chosen
+      Vue 3 as its direction, and I was the one who knew it. The page is
+      <a href="https://www.lifetime.life/locations-map.html" target="_blank" rel="noreferrer"
+        >still live</a
+      >
+      and, as of September 2026, looks the way it did when I shipped it.
+    </p>
+    <figure class="screenshot screenshot-phone">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="
+            /images/work/lifetime/find-a-location-phone-280.webp 280w,
+            /images/work/lifetime/find-a-location-phone-420.webp 420w,
+            /images/work/lifetime/find-a-location-phone-560.webp 560w
+          "
+          sizes="(width <= 760px) 280px, 220px"
+        />
+        <img
+          src="/images/work/lifetime/find-a-location-phone-280.jpg"
+          srcset="
+            /images/work/lifetime/find-a-location-phone-280.jpg 280w,
+            /images/work/lifetime/find-a-location-phone-420.jpg 420w,
+            /images/work/lifetime/find-a-location-phone-560.jpg 560w
+          "
+          sizes="(width <= 760px) 280px, 220px"
+          alt="Find a Location on a phone: a map of Minneapolis clubs with a row of club cards along the bottom and a List button to switch views."
+          width="280"
+          height="476"
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+      <figcaption>On a phone, the map is its own view, with results as a row of cards.</figcaption>
+    </figure>
+    <p>
+      An HTML and CSS specialist built the new design as static markup. I made it a working app:
+      search with Google Places autocomplete, club results from existing APIs, amenity filters, a
+      custom-styled Google Map, and a phone layout where the list and map become separate views. I
+      called the Google Maps JavaScript API directly instead of using a Vue wrapper library, so I
+      could reuse patterns that already worked. The app runs inside the site's Adobe Experience
+      Manager pages, next to the Vue 2 build the rest of the site still loads.
+    </p>
+
+    <h3>One state change, two ways to select a club</h3>
+    <p>
+      The map and the list had to stay in step. Clicking a marker scrolls the list to that club, and
+      clicking a row does the same thing as clicking its marker. I built this around shared Pinia
+      state: the marker and the row each set the same selected club in the store, and everything
+      else reacts to that one change. It doesn't matter which one you click, because both reach the
+      same end state through the same code.
+    </p>
+    <figure class="diagram">
+      <svg
+        viewBox="0 0 560 270"
+        role="img"
+        aria-labelledby="select-title select-desc"
+        focusable="false"
+      >
+        <title id="select-title">Two inputs, one selected club</title>
+        <desc id="select-desc">
+          Clicking a map marker or a list row sets the same selected club in a Pinia store. The
+          store change scrolls the list, highlights the row, enlarges the marker, and opens the
+          pop-up.
+        </desc>
+        <rect class="d-box" x="10" y="40" width="170" height="70" rx="10" />
+        <text class="d-label" x="24" y="70">Map marker</text>
+        <text class="d-muted" x="24" y="95">click</text>
+        <rect class="d-box" x="10" y="170" width="170" height="70" rx="10" />
+        <text class="d-label" x="24" y="200">List row</text>
+        <text class="d-muted" x="24" y="225">click</text>
+        <path class="d-arrow" d="M180 75 L215 120" />
+        <path class="d-arrow" d="M180 205 L215 160" />
+        <rect class="d-accent" x="215" y="95" width="150" height="90" rx="10" />
+        <text class="d-label" x="229" y="130">Pinia store</text>
+        <text class="d-muted" x="229" y="158">selectedClub</text>
+        <path class="d-arrow" d="M365 130 L395 36" />
+        <path class="d-arrow" d="M365 135 L395 102" />
+        <path class="d-arrow" d="M365 145 L395 168" />
+        <path class="d-arrow" d="M365 150 L395 234" />
+        <rect class="d-box" x="395" y="10" width="155" height="52" rx="8" />
+        <text class="d-muted" x="409" y="42">Scroll list</text>
+        <rect class="d-box" x="395" y="76" width="155" height="52" rx="8" />
+        <text class="d-muted" x="409" y="108">Highlight row</text>
+        <rect class="d-box" x="395" y="142" width="155" height="52" rx="8" />
+        <text class="d-muted" x="409" y="174">Enlarge marker</text>
+        <rect class="d-box" x="395" y="208" width="155" height="52" rx="8" />
+        <text class="d-muted" x="409" y="240">Open pop-up</text>
+      </svg>
+    </figure>
+    <figure class="screenshot">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="
+            /images/work/lifetime/find-a-location-desktop-800.webp   800w,
+            /images/work/lifetime/find-a-location-desktop-1200.webp 1200w,
+            /images/work/lifetime/find-a-location-desktop-1600.webp 1600w
+          "
+          sizes="(width <= 760px) 100vw, 70ch"
+        />
+        <img
+          src="/images/work/lifetime/find-a-location-desktop-800.jpg"
+          srcset="
+            /images/work/lifetime/find-a-location-desktop-800.jpg   800w,
+            /images/work/lifetime/find-a-location-desktop-1200.jpg 1200w,
+            /images/work/lifetime/find-a-location-desktop-1600.jpg 1600w
+          "
+          sizes="(width <= 760px) 100vw, 70ch"
+          alt="Find a Location on desktop: the Fridley club is selected, so its map marker shows the Life Time logo and an address pop-up, and its row in the results list is highlighted with the same logo."
+          width="800"
+          height="500"
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+      <figcaption>
+        The shipped page with Fridley selected: logo marker and pop-up on the map, highlighted row
+        in the list.
+      </figcaption>
+    </figure>
+    <p>
+      I wrote unit tests for the Vue logic in Vitest and a few Playwright tests that click through
+      from a result to a club's page. The launch had no deployment problems.
+    </p>
+
+    <h2>The digital guest pass</h2>
+    <p>
+      Members used to bring a guest to the front desk, where the guest filled out paperwork and a
+      waiver. Members got two passes a month. Life Time announced the digital guest pass in May
+      2024, about four months after I joined the Account team. The idea came from marketing and
+      business development, and I wrote the web code that made it work.
+    </p>
+    <p>
+      A member texts a pass link from the app. The link tells our page who invited the guest. We ask
+      for the guest's email first: an existing account goes to log in, and anyone else goes to sign
+      up. The new account records whose guest it is, and when the guest logs in to the app, the app
+      reads that and shows a QR code that gets them into the club.
+    </p>
+    <figure class="diagram">
+      <svg
+        viewBox="0 0 560 404"
+        role="img"
+        aria-labelledby="pass-title pass-desc"
+        focusable="false"
+      >
+        <title id="pass-title">The digital guest pass flow</title>
+        <desc id="pass-desc">
+          A member texts a pass link from the app. The guest lands on the sign-up page, which checks
+          their email and sends them to log in or sign up. The new account records the invite. The
+          guest logs in to the app and gets a QR code. The middle three steps are the web code I
+          wrote.
+        </desc>
+        <rect class="d-box" x="10" y="10" width="420" height="64" rx="10" />
+        <text class="d-label" x="26" y="38">Member texts a pass link</text>
+        <text class="d-muted" x="26" y="62">from the Life Time app</text>
+        <path class="d-arrow" d="M220 74 L220 90" />
+        <rect class="d-accent" x="10" y="90" width="420" height="64" rx="10" />
+        <text class="d-label" x="26" y="118">Guest lands on the sign-up page</text>
+        <text class="d-muted" x="26" y="142">welcoming them as a guest</text>
+        <path class="d-arrow" d="M220 154 L220 170" />
+        <rect class="d-accent" x="10" y="170" width="420" height="64" rx="10" />
+        <text class="d-label" x="26" y="198">Email check</text>
+        <text class="d-muted" x="26" y="222">existing account: log in; new: sign up</text>
+        <path class="d-arrow" d="M220 234 L220 250" />
+        <rect class="d-accent" x="10" y="250" width="420" height="64" rx="10" />
+        <text class="d-label" x="26" y="278">New account records the invite</text>
+        <text class="d-muted" x="26" y="302">the member's ID travels with it</text>
+        <path class="d-arrow" d="M220 314 L220 330" />
+        <rect class="d-box" x="10" y="330" width="420" height="64" rx="10" />
+        <text class="d-label" x="26" y="358">Guest logs in to the app</text>
+        <text class="d-muted" x="26" y="382">and shows a QR code at the desk</text>
+        <path class="d-arrow" d="M442 90 H456 V314 H442" />
+        <text class="d-muted" x="466" y="208">My code</text>
+      </svg>
+    </figure>
+    <p>
+      Most of the tricky work was handling users in different states, starting with people who
+      already had accounts. The handoff to the app turned out simple, since the identifier traveled
+      from the text message, through our page and the new account, to the app at login.
+    </p>
+    <p>
+      Every guest now needed a free account, which fed Life Time's push to grow its free LT Digital
+      subscription. LT Digital passed 1 million subscribers by October 2024 and
+      <a
+        href="https://athletechnews.com/life-time-plays-long-game-as-free-app-hits-1-7m-non-members/"
+        target="_blank"
+        rel="noreferrer"
+        >1.7 million by February 2025</a
+      >, around when my contract ended. My code handled the sign-ups for hundreds of thousands of
+      them. (Life Time's public numbers don't say how many came through guest passes.)
+    </p>
+
+    <h3>The same flow for race packet pickup</h3>
+    <p>
+      In fall 2024, I generalized the flow for Life Time's athletic events, starting with race
+      packet pickup. Participants get an email whose link carries the event, our sign-up page
+      customizes itself for that event, the account records it, and the app shows a QR code for the
+      pickup line. I made the page data-driven: a map from event ID to welcome text and branding, so
+      adding an event meant adding an entry, not writing a new page.
+    </p>
+    <p>
+      The Life Time Miami Marathon and Half in February 2025 was one of the first events to use it,
+      with a fast-track app lane at bib pickup. The Life Time Chicago Half Marathon now requires all
+      participants to use the app for packet pickup.
+    </p>
+
+    <h2>Frontend errors that showed up before anyone reported them</h2>
+    <p>
+      I brought Datadog browser logs to the account section, with logging and proper error handling
+      throughout, so exceptions in the UI (including unhandled ones we'd never have seen) showed up
+      in Datadog. Alerts in Microsoft Teams told us when things looked abnormal. Many turned out to
+      be API failures, not bugs in our code, and because the UI saw them first, we were often the
+      ones telling other teams about problems in their APIs.
+    </p>
+
+    <h3>Retrying account creation under load</h3>
+    <p>
+      The most perplexing alerts were account-creation failures that came in spurts, worst right
+      after Life Time emailed a race's participants and invited them all to sign up at once. Life
+      Time learned to stagger those emails. The backend couldn't simply be changed, so I did what
+      the frontend could: up to seven attempts with exponential backoff, about two minutes of
+      spinner in the worst case, then a message to try again later. The backend team confirmed a
+      retry couldn't create a duplicate account.
+    </p>
+
+    <h3>What I'd do differently</h3>
+    <p>
+      I didn't add jitter, a small random delay on each retry that keeps thousands of clients from
+      retrying at the same moment. I'd add it next time. More to the point, retries were a band-aid.
+      The real fix belonged on the backend, such as a queue to spread out sign-ups during a spike.
+    </p>
+
+    <h2>Along the way</h2>
+    <ul>
+      <li>
+        My first months were cleaning up older JavaScript that loaded on every page of the member
+        and marketing sites. I traced what actually ran, deleted the dead code, and replaced jQuery
+        with native JavaScript, leaving a little in one section already slated for a rewrite.
+      </li>
+      <li>
+        Without being asked, I reviewed pull requests across every frontend repo in the
+        organization, pushing for modern JavaScript and Vue code that would carry over to Vue 3.
+        Most of the developers came from backend work and often took the suggestions.
+      </li>
+      <li>
+        On the Account team, I mentored our junior frontend engineer, who took over the account
+        frontend when I left.
+      </li>
+    </ul>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/contact/">Get in Touch</a>
+      <a
+        class="btn btn-secondary"
+        href="/Resume-David-Dangerfield.pdf"
+        target="_blank"
+        rel="noreferrer"
+        >Download Resume</a
+      >
+    </div>
+  </div>
+</section>

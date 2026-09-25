@@ -304,6 +304,12 @@ main {
   gap: var(--space-4);
 }
 
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
 /* Named so it holds still during page transitions instead of fading. */
 .site-header {
   view-transition-name: site-header;
@@ -530,6 +536,11 @@ main {
   margin-bottom: var(--space-2);
 }
 
+.work-card h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xl);
+}
+
 .work-card {
   display: flex;
   flex-direction: column;
@@ -606,6 +617,38 @@ main {
   max-width: 540px;
   height: auto;
   font-family: inherit;
+}
+
+.screenshot {
+  margin: var(--space-5) 0;
+}
+
+.screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+/* Floats beside the text on wide screens so the tall image doesn't leave a
+   gap; diagrams clear it so they never wrap beside it. */
+.screenshot-phone {
+  float: right;
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value -- photo size */
+  width: 220px;
+  margin: var(--space-1) 0 var(--space-4) var(--space-5);
+}
+
+.diagram,
+.screenshot {
+  clear: both;
+}
+
+.screenshot figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
 .d-box {
@@ -785,6 +828,13 @@ main {
 }
 
 @media (width <= 760px) {
+  .screenshot-phone {
+    float: none;
+    width: auto;
+    max-width: 280px;
+    margin: var(--space-5) auto;
+  }
+
   .nav-toggle {
     display: inline-flex;
   }
@@ -809,6 +859,7 @@ main {
 }
 
 @media (width <= 600px) {
+  .grid-2,
   .grid-3 {
     grid-template-columns: 1fr;
   }
