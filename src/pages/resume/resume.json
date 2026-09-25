@@ -70,7 +70,7 @@
         "AWS",
         "GitHub Actions",
         "Azure DevOps",
-        "DataDog"
+        "Datadog"
       ]
     },
     {
@@ -165,7 +165,7 @@
     },
     {
       "id": "life-time",
-      "title": "Lead Software Developer",
+      "title": "Principal Software Engineer",
       "engagement": "Contractor",
       "employer": "Life Time",
       "location": "Remote",
@@ -180,7 +180,7 @@
         {
           "id": "life-time-architected-frontend-error-reporting",
           "lead": "Architected frontend error reporting",
-          "text": "Architected frontend error reporting using DataDog, giving leaders visibility into user-facing issues"
+          "text": "Architected frontend error reporting using Datadog, giving leaders visibility into user-facing issues"
         },
         {
           "id": "life-time-spearheaded-vue-3-implementation",
@@ -192,7 +192,7 @@
         "GitHub Copilot",
         "TypeScript",
         "Vue.js",
-        "DataDog",
+        "Datadog",
         "Vite",
         "Vitest",
         "Playwright",
@@ -291,7 +291,7 @@
     },
     {
       "id": "smugmug",
-      "title": "Senior Software Engineer",
+      "title": "Senior Frontend Engineer",
       "employer": "SmugMug",
       "location": "Remote",
       "start": "2018-09",
