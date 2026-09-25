@@ -84,9 +84,14 @@ async function fileExists(absPath) {
   }
 }
 
+// Written to dist/ by bundle-js.mjs, with no copy in the source tree to
+// resolve against.
+const BUILD_OUTPUTS = new Set(['/script.js'])
+
 async function validateAbsoluteRef(target, knownRoutes) {
   const clean = stripHashAndQuery(target)
   if (!clean) return true
+  if (BUILD_OUTPUTS.has(clean)) return true
   const cleanPath = clean.startsWith('/') ? clean.slice(1) : clean
 
   if (clean.endsWith('/')) {
