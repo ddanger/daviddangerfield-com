@@ -126,6 +126,18 @@ function buildFooterScheduleLink(footer) {
   return String(html`<a href="${footer.scheduleHref}"${targetAttr}${relAttr}>Schedule</a>`)
 }
 
+// Only links inside <nav>: the brand link also points to /. A section link
+// stays current on its subpages (Work on /work/patterson/), Home only on /.
+function markCurrentNavLink(header, route) {
+  return header.replace(/<nav[\s\S]*?<\/nav>/, (nav) =>
+    nav.replace(/<a href="([^"]+)"/g, (tag, href) =>
+      href === route || (href !== '/' && route.startsWith(href))
+        ? `${tag} aria-current="page"`
+        : tag,
+    ),
+  )
+}
+
 // meta.json "renderer": fills {{PLACEHOLDERS}} in a page's content.html with
 // HTML generated from data in the page folder.
 const PAGE_RENDERERS = {
@@ -210,7 +222,7 @@ export async function build({ minify = true } = {}) {
 
   const written = []
 
-  for (const { pageId, pageDir, meta: page } of discovered) {
+  for (const { pageId, pageDir, meta: page, route } of discovered) {
     const pageContent = injectVersionedResumeLinks(
       await readPageContent(pageId, pageDir, page.renderer),
       resumeUrl,
@@ -228,7 +240,7 @@ export async function build({ minify = true } = {}) {
 
     const pageHtml = interpolate(layout, {
       HEAD_CONTENT: headContent,
-      HEADER: headerPartial,
+      HEADER: markCurrentNavLink(headerPartial, route),
       PAGE_CONTENT: pageContent,
       FOOTER: footer,
       SCRIPT_VERSION: scriptVersion,
