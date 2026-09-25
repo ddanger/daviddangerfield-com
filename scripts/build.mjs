@@ -95,12 +95,10 @@ function buildHeadContent(page, site, stylesCss) {
   lines.push(`<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />`)
   lines.push(`<link rel="manifest" href="/site.webmanifest" />`)
   lines.push(html`<link rel="canonical" href="${page.meta.canonical}" />`)
-  lines.push(
-    `<link rel="preload" href="/fonts/fraunces-latin-700.woff2" as="font" type="font/woff2" crossorigin />`,
-  )
-  lines.push(
-    `<link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />`,
-  )
+  // No font preloads: Chrome holds first paint for preloaded fonts still in
+  // flight (about 100 ms here). The metric-matched fallbacks paint first and
+  // the swap doesn't shift layout.
+
   // CSS is inlined to avoid a render-blocking request. Escape any </style> in
   // it so the inlined block can't close early.
   const safeCss = stylesCss.replace(/<\/style/gi, '<\\/style')
